@@ -6,28 +6,13 @@ Easily calculate in-game time for Mario Kart Wii speedruns.
 
 First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
 
-## Viewing Your Application
+
+## Deploying
 
 ```
-$ polymer serve
+$ polymer build --preset es6-unbundled
+$ gulp deploy
 ```
 
-## Building Your Application
+This will create a build in the `build/` directory, optimized to be served in production. Gulp then deploys the application to the gh-pages branch, which can be viewed at https://charlocharlie.github.io/mkwii-igt-calc/.
 
-```
-$ polymer build
-```
-
-This will create builds of your application in the `build/` directory, optimized to be served in production. You can then serve the built versions by giving `polymer serve` a folder to serve from:
-
-```
-$ polymer serve build/default
-```
-
-## Running Tests
-
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
