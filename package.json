@@ -1,0 +1,27 @@
+{
+  "name": "mkwii-igt-calc",
+  "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
+  "dependencies": {
+    "@polymer/app-layout": "^3.0.0-pre.21",
+    "@polymer/iron-flex-layout": "^3.0.0-pre.21",
+    "@polymer/iron-icons": "^3.0.0-pre.21",
+    "@polymer/iron-validator-behavior": "^3.0.0-pre.21",
+    "@polymer/paper-button": "^3.0.0-pre.21",
+    "@polymer/paper-card": "^3.0.0-pre.21",
+    "@polymer/paper-dropdown-menu": "^3.0.0-pre.21",
+    "@polymer/paper-icon-button": "^3.0.0-pre.21",
+    "@polymer/paper-input": "^3.0.0-pre.21",
+    "@polymer/paper-item": "^3.0.0-pre.21",
+    "@polymer/paper-listbox": "^3.0.0-pre.21",
+    "@polymer/paper-styles": "^3.0.0-pre.21",
+    "@polymer/polymer": "^3.0.0",
+    "web-animations-js": "^2.3.1",
+    "@webcomponents/webcomponentsjs": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-gh-pages": "^0.5.4",
+    "gulp-rename": "^1.4.0",
+    "wct-browser-legacy": "^1.0.0"
+  }
+}
