@@ -10,7 +10,7 @@ First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polyme
 ## Deploying
 
 ```
-$ polymer build --preset es6-unbundled
+$ polymer build --preset es6-bundled
 $ gulp deploy
 ```
 

@@ -7,6 +7,6 @@ const options = {
 }
 
 gulp.task('deploy', function() {
-  return gulp.src('./build/es6-unbundled/**/*')
+  return gulp.src('./build/es6-bundled/**/*')
     .pipe(ghPages(options));
 });
