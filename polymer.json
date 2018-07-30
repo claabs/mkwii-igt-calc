@@ -7,7 +7,7 @@
   },
   "root": "./",
   "extraDependencies": [
-    "manifest.json",
-    "node_modules/@webcomponents/webcomponentsjs/bundles/**"
-  ]
+    "manifest.json"
+  ],
+  "addServiceWorker": false
 }
