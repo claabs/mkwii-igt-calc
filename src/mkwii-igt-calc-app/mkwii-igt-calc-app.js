@@ -163,7 +163,7 @@ class MkwiiIgtCalcApp extends PolymerElement {
     if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds)) {
       this.total = 'Invalid input'
     } else {
-      this.total = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padEnd(3, '0')}`;
+      this.total = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
       if (hours > 0 ) {
         this.total = `${hours}:` + this.total;
       }
