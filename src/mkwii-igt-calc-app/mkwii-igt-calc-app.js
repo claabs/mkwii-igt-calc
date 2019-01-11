@@ -15,6 +15,7 @@ import '@polymer/paper-listbox/paper-listbox'
 import '@polymer/paper-item/paper-item'
 import './course-list/course-list'
 import { tracks32 } from './tracks32'
+import {SplitsIOService} from './splitsio-service';
 
 /**
  * @customElement
@@ -105,6 +106,9 @@ class MkwiiIgtCalcApp extends PolymerElement {
               <course-list id="course-list" courses={{courses}}></course-list>
               <paper-button on-tap="_calculateTime">Calculate</paper-button>
               <h2>Total: {{total}}</h2>
+              <hr>
+              <paper-button on-tap="_uploadSplits">Upload to Splits.io</paper-button>
+              <h3 style="display: none" id="claimMessage"><a href="{{claimLink}}">Splits.io claim link</a></h3>
             </div>
           </paper-card>
         </div>
@@ -141,6 +145,9 @@ class MkwiiIgtCalcApp extends PolymerElement {
       },
       attrSelected: {
         type: String
+      },
+      claimLink: {
+        type: String
       }
 
     };
@@ -168,6 +175,38 @@ class MkwiiIgtCalcApp extends PolymerElement {
         this.total = `${hours}:` + this.total;
       }
     }
+  }
+
+  async _uploadSplits() {
+    // Get category name
+    let categoryNameLong;
+    if (this.selectedTrackCount === 0) {
+      categoryNameLong = '32 Tracks';
+    } else if (this.selectedTrackCount > 0) {
+      categoryNameLong = this.categoryList[this.selectedCategory];
+    }
+
+    // Get split list
+    let segments = [];
+    this.courses.forEach((course) => {
+      let duration = parseInt(course.minutes, 10) * 60000;
+      duration += parseInt(course.seconds, 10) * 1000;
+      duration += parseInt(course.milliseconds, 10);
+      segments.push({
+        name: course.name,
+        duration
+      })
+    });
+
+    const SplitsIO = new SplitsIOService(segments);
+    let exchange = SplitsIO.generateExchangeJson(null, categoryNameLong);
+    try {
+      this.claimLink = await SplitsIO.uploadSplits(exchange);
+      this.$.claimMessage.style.display = "inherit";
+    } catch(e) {
+      console.error(e);
+    }
+
   }
 
   _categoryList(trackCount) {
@@ -219,6 +258,7 @@ class MkwiiIgtCalcApp extends PolymerElement {
       let trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
       this.courses = this._mapTracks(trackOrder);
     }
+    this.$.claimMessage.style.display = "none";
   }
 
   _mapTracks(modTrackList) {

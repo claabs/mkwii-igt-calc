@@ -1,5 +1,6 @@
 {
   "name": "mkwii-igt-calc",
+  "version": "1.1.0",
   "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
   "dependencies": {
     "@polymer/app-layout": "^3.0.0",
@@ -15,8 +16,8 @@
     "@polymer/paper-listbox": "^3.0.0",
     "@polymer/paper-styles": "^3.0.0",
     "@polymer/polymer": "^3.1.0",
-    "web-animations-js": "^2.3.1",
-    "@webcomponents/webcomponentsjs": "^2.2.0"
+    "@webcomponents/webcomponentsjs": "^2.2.0",
+    "web-animations-js": "^2.3.1"
   },
   "devDependencies": {
     "gulp": "^4.0.0",
