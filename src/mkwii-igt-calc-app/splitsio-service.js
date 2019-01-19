@@ -1,5 +1,6 @@
 /**
- * From https://github.com/LiveSplit/LiveSplitOne/blob/84f66004ba23a15288e08454fa9ee59b32a56ac8/src/util/SplitsIO.ts
+ * Manipulates a list of segments and interfaces with splits.io
+ * Partial credit to https://github.com/LiveSplit/LiveSplitOne/blob/84f66004ba23a15288e08454fa9ee59b32a56ac8/src/util/SplitsIO.ts
  */
 export class SplitsIOService {
 
@@ -10,14 +11,6 @@ export class SplitsIOService {
     constructor(splits) {
         this.splits = splits;
         this.exchangeSchema = {};
-    }
-
-
-    appendSplit(name, duration) {
-        this.splits.push({
-            name,
-            duration
-        })
     }
 
     /**
@@ -33,10 +26,9 @@ export class SplitsIOService {
     
     /**
      * Format splits into a valid Splits I/O Exchange Format with proper metadata.
-     * @param {string} categoryShort Shortname is a machine-readable category name, intended for use in APIs, databases, URLs, and filenames.
      * @param {string} categoryLong Longname is a human-readable category name, intended for display to users.
      */
-    generateExchangeJson(categoryShort, categoryLong) {
+    generateExchangeJSON(categoryLong) {
         this.updateSegmentEndTimes();
         const segments = this.splits.map((split) => {
             return {
@@ -59,8 +51,7 @@ export class SplitsIOService {
                 shortname: 'mkwii'
             },
             category: {
-                longname: categoryLong,
-                shortname: categoryShort
+                longname: categoryLong
             },
             segments: segments
         }
@@ -68,6 +59,12 @@ export class SplitsIOService {
         return exchangeJSON;
     }
     
+    /**
+     * Throws error if the response is not 'ok'
+     * @param {*} input The resource that you wish to fetch
+     * @param {Object} init An options object containing any custom settings that you want to apply to the request. 
+     * @returns A promise that resolves a Response object
+     */
     async validatedFetch(input, init) {
         const r = await fetch(input, init);
 
@@ -93,6 +90,7 @@ export class SplitsIOService {
         const json = await response.json();
         const claimUri = json.uris.claim_uri;
         const request = json.presigned_request;
+        const id = json.id;
 
         const formData = new FormData();
         const fields = request.fields;
@@ -113,6 +111,6 @@ export class SplitsIOService {
             }
         );
 
-        return claimUri;
+        return {claimUri, id};
     }
 }

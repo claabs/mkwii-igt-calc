@@ -15,7 +15,7 @@ import '@polymer/paper-listbox/paper-listbox'
 import '@polymer/paper-item/paper-item'
 import './course-list/course-list'
 import { tracks32 } from './tracks32'
-import {SplitsIOService} from './splitsio-service';
+import { SplitsIOService } from './splitsio-service';
 
 /**
  * @customElement
@@ -55,7 +55,7 @@ class MkwiiIgtCalcApp extends PolymerElement {
         }
     
         paper-icon-button {
-          --paper-icon-button-ink-color: white;
+          --paper-icon-button-ink-color: black;
         }
     
         app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -71,9 +71,13 @@ class MkwiiIgtCalcApp extends PolymerElement {
           color: var(--paper-grey-50);
           font-weight: 600;
         }
+
+        .splitsio-id {
+          width: calc(4ch + 40px);
+        }
       </style>
     </custom-style>
-    
+
     <app-drawer-layout>
       <!-- <app-drawer slot="drawer" swipe-open>
                 <app-toolbar>Getting Started</app-toolbar>
@@ -107,8 +111,14 @@ class MkwiiIgtCalcApp extends PolymerElement {
               <paper-button on-tap="_calculateTime">Calculate</paper-button>
               <h2>Total: {{total}}</h2>
               <hr>
-              <paper-button on-tap="_uploadSplits">Upload to Splits.io</paper-button>
-              <h3 style="display: none" id="claimMessage"><a href="{{claimLink}}">Splits.io claim link</a></h3>
+              <div class="layout horizontal">
+                <paper-button on-tap="_uploadSplits">Upload to Splits.io</paper-button>
+                <a href="[[claimLink]]" target="_blank" hidden=[[claimMessageHidden]]><paper-button >Claim Splits.io Run</paper-button></a>
+              </div>
+              <paper-input id="splitsio-id" class="splitsio-id" readonly always-float-label label="splits.io ID" value="[[splitsioId]]">
+                <paper-icon-button slot="suffix" icon="content-copy" on-tap="_copyClicked">
+                </paper-icon-button>
+              </paper-input>
             </div>
           </paper-card>
         </div>
@@ -148,18 +158,30 @@ class MkwiiIgtCalcApp extends PolymerElement {
       },
       claimLink: {
         type: String
+      },
+      claimMessageHidden: {
+        type: Boolean,
+        value: true
+      },
+      splitsioId: {
+        type: String
       }
 
     };
   }
 
   _calculateTime() {
+    let invalid = false;
     let hours = 0, minutes = 0, seconds = 0, milliseconds = 0;
     // let minutes, seconds, milliseconds = 0;
     this.courses.forEach(course => {
-      minutes += parseInt(course.minutes, 10);
-      seconds += parseInt(course.seconds, 10);
-      milliseconds += parseInt(course.milliseconds, 10);
+      let minInt = parseInt(course.minutes, 10);
+      let secInt = parseInt(course.seconds, 10);
+      let milliInt = parseInt(course.milliseconds, 10);
+      minutes += minInt;
+      seconds += secInt;
+      milliseconds += milliInt;
+      invalid = invalid || this._timesInvalid(minInt, secInt, milliInt)
     });
     seconds += Math.floor(milliseconds / 1000);
     milliseconds = milliseconds % 1000;
@@ -167,7 +189,7 @@ class MkwiiIgtCalcApp extends PolymerElement {
     seconds = seconds % 60;
     hours += Math.floor(minutes / 60);
     minutes = minutes % 60;
-    if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds)) {
+    if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds) || invalid) {
       this.total = 'Invalid input'
     } else {
       this.total = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
@@ -177,36 +199,51 @@ class MkwiiIgtCalcApp extends PolymerElement {
     }
   }
 
+  _timesInvalid(minInt, secInt, milliInt) {
+    return isNaN(minInt) || minInt > 9 || minInt < 0
+      || isNaN(secInt) || secInt > 59 || minInt < 0 
+      || isNaN(milliInt) || milliInt > 999 || milliInt < 0;
+  }
+
   async _uploadSplits() {
-    // Get category name
-    let categoryNameLong;
-    if (this.selectedTrackCount === 0) {
-      categoryNameLong = '32 Tracks';
-    } else if (this.selectedTrackCount > 0) {
-      categoryNameLong = this.categoryList[this.selectedCategory];
+    this.claimMessageHidden = true;
+    this._calculateTime();
+    if (this.total === 'Invalid input') {
+      this.splitsioId = null;
+      this.claimMessageHidden = true;
+    } else {
+      // Get category name
+      let categoryNameLong;
+      if (this.selectedTrackCount === 0) {
+        categoryNameLong = '32 Tracks';
+      } else if (this.selectedTrackCount > 0) {
+        categoryNameLong = this.categoryList[this.selectedCategory];
+      }
+
+      // Get split list
+      let segments = [];
+      this.courses.forEach((course) => {
+        let duration = parseInt(course.minutes, 10) * 60000;
+        duration += parseInt(course.seconds, 10) * 1000;
+        duration += parseInt(course.milliseconds, 10);
+        segments.push({
+          name: course.name,
+          duration
+        })
+      });
+
+      const SplitsIO = new SplitsIOService(segments);
+      let exchange = SplitsIO.generateExchangeJSON(categoryNameLong);
+      let uploadResp;
+      try {
+        uploadResp = await SplitsIO.uploadSplits(exchange);
+      } catch (e) {
+        console.error(e);
+      }
+      this.claimLink = uploadResp.claimUri;
+      this.splitsioId = uploadResp.id;
+      this.claimMessageHidden = false;
     }
-
-    // Get split list
-    let segments = [];
-    this.courses.forEach((course) => {
-      let duration = parseInt(course.minutes, 10) * 60000;
-      duration += parseInt(course.seconds, 10) * 1000;
-      duration += parseInt(course.milliseconds, 10);
-      segments.push({
-        name: course.name,
-        duration
-      })
-    });
-
-    const SplitsIO = new SplitsIOService(segments);
-    let exchange = SplitsIO.generateExchangeJson(null, categoryNameLong);
-    try {
-      this.claimLink = await SplitsIO.uploadSplits(exchange);
-      this.$.claimMessage.style.display = "inherit";
-    } catch(e) {
-      console.error(e);
-    }
-
   }
 
   _categoryList(trackCount) {
@@ -258,7 +295,9 @@ class MkwiiIgtCalcApp extends PolymerElement {
       let trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
       this.courses = this._mapTracks(trackOrder);
     }
-    this.$.claimMessage.style.display = "none";
+    this.claimMessageHidden = true;
+    this.total = '';
+    this.splitsioId = null;
   }
 
   _mapTracks(modTrackList) {
@@ -273,6 +312,18 @@ class MkwiiIgtCalcApp extends PolymerElement {
         milliseconds: null,
       }
     });
+  }
+
+  _copyClicked() {
+    const input = this.$['splitsio-id'].inputElement.inputElement;
+    input.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      console.error('Oops, unable to copy');
+    }
+    input.selectionEnd = input.selectionStart;
+    input.blur();
   }
 }
 
