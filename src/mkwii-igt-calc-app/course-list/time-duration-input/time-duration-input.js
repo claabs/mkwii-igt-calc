@@ -31,32 +31,38 @@ class TimeDurationInput extends PolymerElement {
         }
     
         .minute {
-            width: 1ch;
+            --paper-input-container-shared-input-style: {
+                width: 1ch;
+                -webkit-appearance: textfield;
+            }
             text-align: right;
         }
     
         .second {
-            width: 2ch;
+            --paper-input-container-shared-input-style: {
+                width: 2ch;
+                -webkit-appearance: textfield;
+            }
             text-align: right;
         }
     
         .millisecond {
-            width: 3ch;
+            --paper-input-container-shared-input-style: {
+                width: 3ch;
+                -webkit-appearance: textfield;
+            }
             text-align: left;
         }
     
         paper-input {
-            outline: none;
-            -moz-appearance: textfield;
             --paper-input-container-input-webkit-spinner: {
                 -webkit-appearance: none;
-                margin: 0;
             }
             --paper-input-container-input: {
                 font-size: 24px;
             };
         }
-    
+        
         .floated-label-placeholder {
             @apply --paper-font-caption;
             color: var(--paper-input-container-color, var(--secondary-text-color));
@@ -115,6 +121,7 @@ class TimeDurationInput extends PolymerElement {
         }
         if (e.target.value) {
             e.target.value = e.target.value.padStart(2, '0');
+            // Doesn't work on Firefox due to old bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1005603
         }
     }
     _msBlur(e) {
