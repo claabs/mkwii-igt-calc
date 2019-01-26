@@ -1,4 +1,4 @@
-import { html, PolymerElement } from '@polymer/polymer';
+import {html, PolymerElement} from '@polymer/polymer';
 import '@polymer/app-layout/app-layout';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-icon-button/paper-icon-button';
@@ -7,23 +7,23 @@ import '@polymer/app-layout/app-scroll-effects/app-scroll-effects';
 import '@polymer/paper-styles/color';
 import '@polymer/paper-styles/typography';
 import '@polymer/paper-styles/shadow';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes'
-import '@polymer/paper-input/paper-input'
-import '@polymer/paper-button/paper-button'
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu'
-import '@polymer/paper-listbox/paper-listbox'
-import '@polymer/paper-item/paper-item'
-import './course-list/course-list'
-import { tracks32 } from './tracks32'
-import { SplitsIOService } from './splitsio-service';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes';
+import '@polymer/paper-input/paper-input';
+import '@polymer/paper-button/paper-button';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu';
+import '@polymer/paper-listbox/paper-listbox';
+import '@polymer/paper-item/paper-item';
+import './course-list/course-list';
+import {tracks32} from './tracks32';
+import {SplitsIOService} from './splitsio-service';
 
 /**
  * @customElement
  * @polymer
  */
 class MkwiiIgtCalcApp extends PolymerElement {
-  static get template() {
-    return html`
+	static get template() {
+		return html`
     <custom-style>
       <style is="custom-style" include="iron-flex iron-flex-alignment">
          :host {
@@ -125,212 +125,223 @@ class MkwiiIgtCalcApp extends PolymerElement {
       </app-header-layout>
     </app-drawer-layout>
     `;
-  }
+	}
 
-  static get properties() {
-    return {
-      total: {
-        type: String
-      },
-      selectedTrackCount: {
-        type: Number,
-        value: 0,
-        observer: '_trackCountChanged'
-      },
-      selectedCategory: {
-        type: Number,
-        value: 0,
-        observer: '_categoryChanged'
-      },
-      categoryList: {
-        type: Array,
-        computed: '_categoryList(selectedTrackCount)',
-      },
-      categoryLabel: {
-        type: String,
-        computed: '_categoryLabel(selectedTrackCount)',
-      },
-      courses: {
-        type: Array
-      },
-      attrSelected: {
-        type: String
-      },
-      claimLink: {
-        type: String
-      },
-      claimMessageHidden: {
-        type: Boolean,
-        value: true
-      },
-      splitsioId: {
-        type: String
-      }
+	static get properties() {
+		return {
+			total: {
+				type: String
+			},
+			selectedTrackCount: {
+				type: Number,
+				value: 0,
+				observer: '_trackCountChanged'
+			},
+			selectedCategory: {
+				type: Number,
+				value: 0,
+				observer: '_categoryChanged'
+			},
+			categoryList: {
+				type: Array,
+				computed: '_categoryList(selectedTrackCount)'
+			},
+			categoryLabel: {
+				type: String,
+				computed: '_categoryLabel(selectedTrackCount)'
+			},
+			courses: {
+				type: Array
+			},
+			attrSelected: {
+				type: String
+			},
+			claimLink: {
+				type: String
+			},
+			claimMessageHidden: {
+				type: Boolean,
+				value: true
+			},
+			splitsioId: {
+				type: String
+			}
 
-    };
-  }
+		};
+	}
 
-  _calculateTime() {
-    let invalid = false;
-    let hours = 0, minutes = 0, seconds = 0, milliseconds = 0;
-    // let minutes, seconds, milliseconds = 0;
-    this.courses.forEach(course => {
-      let minInt = parseInt(course.minutes, 10);
-      let secInt = parseInt(course.seconds, 10);
-      let milliInt = parseInt(course.milliseconds, 10);
-      minutes += minInt;
-      seconds += secInt;
-      milliseconds += milliInt;
-      invalid = invalid || this._timesInvalid(minInt, secInt, milliInt)
-    });
-    seconds += Math.floor(milliseconds / 1000);
-    milliseconds = milliseconds % 1000;
-    minutes += Math.floor(seconds / 60);
-    seconds = seconds % 60;
-    hours += Math.floor(minutes / 60);
-    minutes = minutes % 60;
-    if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds) || invalid) {
-      this.total = 'Invalid input'
-    } else {
-      this.total = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
-      if (hours > 0 ) {
-        this.total = `${hours}:` + this.total;
-      }
-    }
-  }
+	_calculateTime() {
+		let invalid = false;
+		let hours = 0;
+		let minutes = 0;
+		let seconds = 0;
+		let milliseconds = 0;
+		this.courses.forEach(course => {
+			const minInt = parseInt(course.minutes, 10);
+			const secInt = parseInt(course.seconds, 10);
+			const milliInt = parseInt(course.milliseconds, 10);
+			minutes += minInt;
+			seconds += secInt;
+			milliseconds += milliInt;
+			invalid = invalid || this._timesInvalid(minInt, secInt, milliInt);
+		});
+		seconds += Math.floor(milliseconds / 1000);
+		milliseconds %= 1000;
+		minutes += Math.floor(seconds / 60);
+		seconds %= 60;
+		hours += Math.floor(minutes / 60);
+		minutes %= 60;
+		if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds) || invalid) {
+			this.total = 'Invalid input';
+		} else {
+			this.total = `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+			if (hours > 0) {
+				this.total = `${hours}:` + this.total;
+			}
+		}
+	}
 
-  _timesInvalid(minInt, secInt, milliInt) {
-    return isNaN(minInt) || minInt > 9 || minInt < 0
-      || isNaN(secInt) || secInt > 59 || minInt < 0 
-      || isNaN(milliInt) || milliInt > 999 || milliInt < 0;
-  }
+	_timesInvalid(minInt, secInt, milliInt) {
+		return isNaN(minInt) || minInt > 9 || minInt < 0 ||
+      isNaN(secInt) || secInt > 59 || minInt < 0 ||
+      isNaN(milliInt) || milliInt > 999 || milliInt < 0;
+	}
 
-  async _uploadSplits() {
-    this.claimMessageHidden = true;
-    this._calculateTime();
-    if (this.total === 'Invalid input') {
-      this.splitsioId = null;
-      this.claimMessageHidden = true;
-    } else {
-      // Get category name
-      let categoryNameLong;
-      if (this.selectedTrackCount === 0) {
-        categoryNameLong = '32 Tracks';
-      } else if (this.selectedTrackCount > 0) {
-        categoryNameLong = this.categoryList[this.selectedCategory];
-      }
+	async _uploadSplits() {
+		this.claimMessageHidden = true;
+		this._calculateTime();
+		if (this.total === 'Invalid input') {
+			this.splitsioId = null;
+			this.claimMessageHidden = true;
+		} else {
+			// Get category name
+			let categoryNameLong;
+			if (this.selectedTrackCount === 0) {
+				categoryNameLong = '32 Tracks';
+			} else if (this.selectedTrackCount > 0) {
+				categoryNameLong = this.categoryList[this.selectedCategory];
+			}
 
-      // Get split list
-      let segments = [];
-      this.courses.forEach((course) => {
-        let duration = parseInt(course.minutes, 10) * 60000;
-        duration += parseInt(course.seconds, 10) * 1000;
-        duration += parseInt(course.milliseconds, 10);
-        segments.push({
-          name: course.name,
-          duration
-        })
-      });
+			// Get split list
+			const segments = [];
+			this.courses.forEach(course => {
+				let duration = parseInt(course.minutes, 10) * 60000;
+				duration += parseInt(course.seconds, 10) * 1000;
+				duration += parseInt(course.milliseconds, 10);
+				segments.push({
+					name: course.name,
+					duration
+				});
+			});
 
-      const SplitsIO = new SplitsIOService(segments);
-      let exchange = SplitsIO.generateExchangeJSON(categoryNameLong);
-      let uploadResp;
-      try {
-        uploadResp = await SplitsIO.uploadSplits(exchange);
-      } catch (e) {
-        console.error(e);
-      }
-      this.claimLink = uploadResp.claimUri;
-      this.splitsioId = uploadResp.id;
-      this.claimMessageHidden = false;
-    }
-  }
+			const SplitsIO = new SplitsIOService(segments);
+			const exchange = SplitsIO.generateExchangeJSON(categoryNameLong);
+			let uploadResp;
+			try {
+				uploadResp = await SplitsIO.uploadSplits(exchange);
+			} catch (e) {
+				console.error(e);
+			}
 
-  _categoryList(trackCount) {
-    if (trackCount == 0) { // 32 Tracks
-      return tracks32.map(elem => elem.name);
-    } else if (trackCount == 1) { // 16 Tracks
-      return [
-        `Nitro Tracks`,
-        `Retro Tracks`
-      ];
-    } else if (trackCount == 2) { // Individual Cups
-      return [
-        `Mushroom Cup`,
-        `Flower Cup`,
-        `Star Cup`,
-        `Special Cup`,
-        `Shell Cup`,
-        `Banana Cup`,
-        `Leaf Cup`,
-        `Lightning Cup`
-      ];
-    }
-  }
+			this.claimLink = uploadResp.claimUri;
+			this.splitsioId = uploadResp.id;
+			this.claimMessageHidden = false;
+		}
+	}
 
-  _categoryLabel(trackCount) {
-    if (trackCount == 0) {
-      return 'Starting Track'
-    } else if (trackCount == 1 || trackCount == 2) {
-      return 'Category'
-    }
-  }
+	_categoryList(trackCount) {
+		if (trackCount === 0) { // 32 Tracks
+			return tracks32.map(elem => elem.name);
+		}
 
-  _trackCountChanged(newVal, oldVal) {
-    this.selectedCategory = -1;
-    this.$.categoryTemplate.render();
-    this.$.categoryListbox.forceSynchronousItemUpdate();
-    this.selectedCategory = 0;
-  }
+		if (trackCount === 1) { // 16 Tracks
+			return [
+				'Nitro Tracks',
+				'Retro Tracks'
+			];
+		}
 
-  _categoryChanged(newVal, oldVal) {
-    if (this.selectedTrackCount == 0) { // 32 Track
-      let rotatedTrackOrder = rotate(tracks32, newVal);
-      // let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
-      this.courses = this._mapTracks(rotatedTrackOrder);
-    } else if (this.selectedTrackCount == 1) {
-      let trackOrder = tracks32.slice(newVal * 16, newVal * 16 + 16);
-      this.courses = this._mapTracks(trackOrder);
-    } else if (this.selectedTrackCount == 2) { // Individual Cups
-      let trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
-      this.courses = this._mapTracks(trackOrder);
-    }
-    this.claimMessageHidden = true;
-    this.total = '';
-    this.splitsioId = null;
-  }
+		if (trackCount === 2) { // Individual Cups
+			return [
+				'Mushroom Cup',
+				'Flower Cup',
+				'Star Cup',
+				'Special Cup',
+				'Shell Cup',
+				'Banana Cup',
+				'Leaf Cup',
+				'Lightning Cup'
+			];
+		}
+	}
 
-  _mapTracks(modTrackList) {
-    return modTrackList.map(elem => {
-      return {
-        name: elem.name,
-        plcMinutes: elem.avgMinutes,
-        plcSeconds: elem.avgSeconds,
-        plcMilliseconds: elem.avgMilliseconds,
-        minutes: null,
-        seconds: null,
-        milliseconds: null,
-      }
-    });
-  }
+	_categoryLabel(trackCount) {
+		if (trackCount === 0) {
+			return 'Starting Track';
+		}
 
-  _copyClicked() {
-    const input = this.$['splitsio-id'].inputElement.inputElement;
-    input.select();
-    try {
-      document.execCommand('copy');
-    } catch (err) {
-      console.error('Oops, unable to copy');
-    }
-    input.selectionEnd = input.selectionStart;
-    input.blur();
-  }
+		if (trackCount === 1 || trackCount === 2) {
+			return 'Category';
+		}
+	}
+
+	_trackCountChanged() {
+		this.selectedCategory = -1;
+		this.$.categoryTemplate.render();
+		this.$.categoryListbox.forceSynchronousItemUpdate();
+		this.selectedCategory = 0;
+	}
+
+	_categoryChanged(newVal) {
+		if (this.selectedTrackCount === 0) { // 32 Track
+			const rotatedTrackOrder = rotate(tracks32, newVal);
+			// Let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
+			this.courses = this._mapTracks(rotatedTrackOrder);
+		} else if (this.selectedTrackCount === 1) {
+			const trackOrder = tracks32.slice(newVal * 16, (newVal * 16) + 16);
+			this.courses = this._mapTracks(trackOrder);
+		} else if (this.selectedTrackCount === 2) { // Individual Cups
+			const trackOrder = tracks32.slice(newVal * 4, (newVal * 4) + 4);
+			this.courses = this._mapTracks(trackOrder);
+		}
+
+		this.claimMessageHidden = true;
+		this.total = '';
+		this.splitsioId = null;
+	}
+
+	_mapTracks(modTrackList) {
+		return modTrackList.map(elem => {
+			return {
+				name: elem.name,
+				plcMinutes: elem.avgMinutes,
+				plcSeconds: elem.avgSeconds,
+				plcMilliseconds: elem.avgMilliseconds,
+				minutes: null,
+				seconds: null,
+				milliseconds: null
+			};
+		});
+	}
+
+	_copyClicked() {
+		const input = this.$['splitsio-id'].inputElement.inputElement;
+		input.select();
+		try {
+			document.execCommand('copy');
+		} catch (err) {
+			console.error('Oops, unable to copy');
+		}
+
+		input.selectionEnd = input.selectionStart;
+		input.blur();
+	}
 }
 
 function rotate(ary, n) {
-  const l = ary.length
-  const offset = (n + l) % l;
-  return ary.slice(offset).concat(ary.slice(0, offset));
+	const l = ary.length;
+	const offset = (n + l) % l;
+	return ary.slice(offset).concat(ary.slice(0, offset));
 }
 
 window.customElements.define('mkwii-igt-calc-app', MkwiiIgtCalcApp);

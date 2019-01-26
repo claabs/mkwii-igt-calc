@@ -1,15 +1,15 @@
-import { html, PolymerElement } from '@polymer/polymer';
-import '@polymer/paper-input/paper-input'
-import '@polymer/iron-flex-layout/iron-flex-layout-classes'
-import '@polymer/iron-validator-behavior/iron-validator-behavior'
+import {html, PolymerElement} from '@polymer/polymer';
+import '@polymer/paper-input/paper-input';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes';
+import '@polymer/iron-validator-behavior/iron-validator-behavior';
 
 /**
  * @customElement
  * @polymer
  */
 class TimeDurationInput extends PolymerElement {
-    static get template() {
-        return html`
+	static get template() {
+		return html`
     <style include="iron-flex iron-flex-alignment">
         :host {
             display: block;
@@ -80,102 +80,106 @@ class TimeDurationInput extends PolymerElement {
             no-label-float placeholder="[[plcMilliseconds]]" type="number" value="{{milliseconds}}" allowed-pattern="[0-9]"></paper-input>
     </div>
     `;
-    }
+	}
 
-    ready() {
-        super.ready();
-        this._padPlaceholders();
-    }
+	ready() {
+		super.ready();
+		this._padPlaceholders();
+	}
 
-    _minuteKeydown(e) {
-        this.getRootNode().host.notifyChange(this.index, 'minutes', e.target.value);
-        if (e.keyCode == 186 || e.keyCode == 110 || e.keyCode == 13) { //semicolon, dot, or enter
-            this.$.second.focus();
-        }
-    }
+	_minuteKeydown(e) {
+		this.getRootNode().host.notifyChange(this.index, 'minutes', e.target.value);
+		if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) { // Semicolon, dot, or enter
+			this.$.second.focus();
+		}
+	}
 
-    _secondKeydown(e) {
-        this.getRootNode().host.notifyChange(this.index, 'seconds', e.target.value);
-        if (e.keyCode == 110 || e.keyCode == 13) { //dot or enter
-            this.$.millisecond.focus();
-        }
-    }
+	_secondKeydown(e) {
+		this.getRootNode().host.notifyChange(this.index, 'seconds', e.target.value);
+		if (e.keyCode === 110 || e.keyCode === 13) { // Dot or enter
+			this.$.millisecond.focus();
+		}
+	}
 
-    _msKeydown(e) {
-        this.getRootNode().host.notifyChange(this.index, 'milliseconds', e.target.value);
-        if (e.keyCode == 13) { //enter
-            let neighbor = this.getRootNode().querySelector(`#course-${this.index + 1}`);
-            if (neighbor) {
-                neighbor.$.minute.focus();
-            }
-        }
-    }
-    _minuteBlur(e) {
-        if (!e.target.value) {
-            this.$.minute.invalid = true;
-        }
-    }
-    _secondBlur(e) {
-        if (!e.target.value) {
-            this.$.second.invalid = true;
-        }
-        if (e.target.value) {
-            e.target.value = e.target.value.padStart(2, '0');
-            // Doesn't work on Firefox due to old bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1005603
-        }
-    }
-    _msBlur(e) {
-        if (!e.target.value) {
-            this.$.millisecond.invalid = true;
-        }
-        if (e.target.value) {
-            e.target.value = e.target.value.padEnd(3, '0');
-        }
-    }
+	_msKeydown(e) {
+		this.getRootNode().host.notifyChange(this.index, 'milliseconds', e.target.value);
+		if (e.keyCode === 13) { // Enter
+			const neighbor = this.getRootNode().querySelector(`#course-${this.index + 1}`);
+			if (neighbor) {
+				neighbor.$.minute.focus();
+			}
+		}
+	}
 
-    _padObserver(newVal, oldVal) {
-        this._padPlaceholders();
-    }
+	_minuteBlur(e) {
+		if (!e.target.value) {
+			this.$.minute.invalid = true;
+		}
+	}
 
-    _padPlaceholders() {
-        this.$.second.placeholder = this.$.second.placeholder.toString().padStart(2, '0');
-        this.$.millisecond.placeholder = this.$.millisecond.placeholder.toString().padEnd(3, '0');
+	_secondBlur(e) {
+		if (!e.target.value) {
+			this.$.second.invalid = true;
+		}
 
-    }
+		if (e.target.value) {
+			e.target.value = e.target.value.padStart(2, '0');
+			// Doesn't work on Firefox due to old bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1005603
+		}
+	}
 
-    static get properties() {
-        return {
-            minutes: {
-                type: Number,
-                notify: true,
-            },
-            seconds: {
-                type: Number,
-                notify: true,
-            },
-            milliseconds: {
-                type: Number,
-                notify: true,
-            },
-            plcMinutes: {
-                type: Number,
-            },
-            plcSeconds: {
-                type: Number,
-                observer: '_padObserver',
-            },
-            plcMilliseconds: {
-                type: Number,
-                observer: '_padObserver',
-            },
-            label: {
-                type: String,
-            },
-            index: {
-                type: Number,
-            }
-        };
-    }
+	_msBlur(e) {
+		if (!e.target.value) {
+			this.$.millisecond.invalid = true;
+		}
+
+		if (e.target.value) {
+			e.target.value = e.target.value.padEnd(3, '0');
+		}
+	}
+
+	_padObserver() {
+		this._padPlaceholders();
+	}
+
+	_padPlaceholders() {
+		this.$.second.placeholder = this.$.second.placeholder.toString().padStart(2, '0');
+		this.$.millisecond.placeholder = this.$.millisecond.placeholder.toString().padEnd(3, '0');
+	}
+
+	static get properties() {
+		return {
+			minutes: {
+				type: Number,
+				notify: true
+			},
+			seconds: {
+				type: Number,
+				notify: true
+			},
+			milliseconds: {
+				type: Number,
+				notify: true
+			},
+			plcMinutes: {
+				type: Number
+			},
+			plcSeconds: {
+				type: Number,
+				observer: '_padObserver'
+			},
+			plcMilliseconds: {
+				type: Number,
+				observer: '_padObserver'
+			},
+			label: {
+				type: String
+			},
+			index: {
+				type: Number
+			}
+		};
+	}
 }
 
 window.customElements.define('time-duration-input', TimeDurationInput);
