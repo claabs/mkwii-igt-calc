@@ -24,6 +24,7 @@
   "dependencies": {
     "@material/mwc-button": "^0.14.0",
     "@material/mwc-icon-button": "^0.14.0",
+    "@material/mwc-list": "^0.14.0",
     "@material/mwc-select": "^0.14.0",
     "@material/mwc-textfield": "^0.14.0",
     "@material/mwc-top-app-bar": "^0.14.0",

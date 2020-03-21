@@ -1,17 +1,6 @@
-import { TextField } from '@material/mwc-textfield';
 import { LitElement, html, customElement, property, css } from 'lit-element';
-
-export interface TimeDurationInputAttr {
-  minutes?: string;
-  seconds?: string;
-  milliseconds?: string;
-  plcMinutes: string;
-  plcSeconds: string;
-  plcMilliseconds: string;
-  label?: string;
-  index?: number;
-  name: string;
-}
+import { TextField } from '@material/mwc-textfield';
+import '@material/mwc-textfield';
 
 @customElement('time-duration-input')
 export class TimeDurationInput extends LitElement {
@@ -67,8 +56,8 @@ export class TimeDurationInput extends LitElement {
   @property({ type: String, attribute: true })
   private plcMilliseconds = '';
 
-  // @property({ type: String, attribute: true })
-  // private label = '';
+  @property({ type: String, attribute: true })
+  private label = '';
 
   @property({ type: Number, attribute: true })
   private index = 0;
@@ -83,40 +72,40 @@ export class TimeDurationInput extends LitElement {
       outline: none;
     }
 
-    :host([hidden]) {
+    /* :host([hidden]) {
       display: none !important;
-    }
+    } */
 
     .separator-char {
       line-height: 28px;
       padding: 8px 0 10px 0;
-      color: var(--paper-input-container-shared-input-style_-_color);
+      /* color: var(--paper-input-container-shared-input-style_-_color); */
     }
 
     .minute {
-      --paper-input-container-shared-input-style: {
+      /* --paper-input-container-shared-input-style: {
         width: 1ch;
         -webkit-appearance: textfield;
-      }
+      } */
       text-align: right;
     }
 
     .second {
-      --paper-input-container-shared-input-style: {
+      /* --paper-input-container-shared-input-style: {
         width: 2ch;
         -webkit-appearance: textfield;
-      }
+      } */
       text-align: right;
     }
 
     .millisecond {
-      --paper-input-container-shared-input-style: {
+      /* --paper-input-container-shared-input-style: {
         width: 3ch;
         -webkit-appearance: textfield;
-      }
+      } */
       text-align: left;
     }
-
+    /* 
     paper-input {
       --paper-input-container-input-webkit-spinner: {
         -webkit-appearance: none;
@@ -124,7 +113,25 @@ export class TimeDurationInput extends LitElement {
       --paper-input-container-input: {
         font-size: 24px;
       }
+    } */
+
+    .layout {
+      display: flex;
     }
+
+    .layout.horizontal {
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+    }
+
+    .layout.center,
+    .layout.center-center {
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+
     /* 
     .floated-label-placeholder {
       @apply --paper-font-caption;
@@ -134,8 +141,7 @@ export class TimeDurationInput extends LitElement {
 
   render() {
     return html`
-      <style include="iron-flex iron-flex-alignment"></style>
-      <div class="floated-label-placeholder">[[label]]</div>
+      <div class="floated-label-placeholder">${this.label}</div>
       <div class="layout horizontal center">
         <mwc-textfield
           id="minute"
@@ -182,10 +188,11 @@ export class TimeDurationInput extends LitElement {
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.padPlaceholders();
-  }
+  // connectedCallback() {
+  //   super.connectedCallback();
+  //   this.padPlaceholders();
+  //   this.render();
+  // }
 
   private minuteKeydown(e: KeyboardEvent) {
     if (e.target) {
@@ -201,7 +208,7 @@ export class TimeDurationInput extends LitElement {
         const { shadowRoot } = this;
         if (!shadowRoot) throw new Error('Missing shadowRoot');
         const secondElem = shadowRoot.getElementById(
-          'millisecond'
+          'second'
         ) as TextField | null;
         if (!secondElem) throw new Error('Missing secondElem');
         secondElem.focus();
@@ -299,24 +306,24 @@ export class TimeDurationInput extends LitElement {
   //   this.padPlaceholders();
   // }
 
-  private padPlaceholders() {
-    const { shadowRoot } = this;
-    if (shadowRoot) {
-      const secondElem = shadowRoot.getElementById(
-        'second'
-      ) as TextField | null;
-      if (secondElem)
-        secondElem.placeholder = secondElem.placeholder
-          .toString()
-          .padStart(2, '0');
+  // private padPlaceholders() {
+  //   const { shadowRoot } = this;
+  //   if (shadowRoot) {
+  //     const secondElem = shadowRoot.getElementById(
+  //       'second'
+  //     ) as TextField | null;
+  //     if (secondElem)
+  //       secondElem.placeholder = secondElem.placeholder
+  //         .toString()
+  //         .padStart(2, '0');
 
-      const msElem = shadowRoot.getElementById(
-        'millisecond'
-      ) as TextField | null;
-      if (msElem)
-        msElem.placeholder = msElem.placeholder.toString().padEnd(3, '0');
-    }
-  }
+  //     const msElem = shadowRoot.getElementById(
+  //       'millisecond'
+  //     ) as TextField | null;
+  //     if (msElem)
+  //       msElem.placeholder = msElem.placeholder.toString().padEnd(3, '0');
+  //   }
+  // }
 }
 
 declare global {

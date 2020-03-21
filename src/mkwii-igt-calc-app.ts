@@ -1,13 +1,17 @@
-import './elements/course-list';
 import { LitElement, html, customElement, property, css } from 'lit-element';
 import '@material/mwc-top-app-bar';
 import '@material/mwc-select';
+import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-button';
+import '@material/mwc-icon-button';
+import '@material/mwc-textfield';
 import { TextField } from '@material/mwc-textfield';
-// import { tracks32, TrackData } from './data/tracks32';
+import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
+import { tracks32, TrackData } from './data/tracks32';
 import { SplitsIOService, Split } from './services/splitsio';
 
-import { TimeDurationInputAttr } from './elements/time-duration-input';
+import './time-duration-input';
+import { TimeDurationInputAttr } from './data/types';
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
@@ -18,7 +22,7 @@ class MkwiiIgtCalcApp extends LitElement {
       }
       font-size: 14px;
       background-color: var(--paper-grey-50);
-    }
+    } */
 
     .content {
       display: block;
@@ -28,7 +32,7 @@ class MkwiiIgtCalcApp extends LitElement {
       margin: 5px auto;
     }
 
-    paper-card {
+    /* paper-card {
       display: inline-block;
       width: 100%;
       color: black;
@@ -48,28 +52,32 @@ class MkwiiIgtCalcApp extends LitElement {
       display: none;
     }
 
-    .course-row {
+    /* .course-row {
       font-size: 24px;
-    }
+    } */
 
-    paper-button {
+    /* paper-button {
       background-color: var(--paper-blue-500);
       color: var(--paper-grey-50);
       font-weight: 600;
-    }
+    }  */
     .splitsio-id {
       width: calc(4ch + 40px);
-    } */
+    }
+
+    .layout {
+      display: flex;
+    }
+
+    .layout.horizontal {
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+    }
   `;
 
   render() {
     return html`
-      <custom-style>
-        <style
-          is="custom-style"
-          include="iron-flex iron-flex-alignment"
-        ></style>
-      </custom-style>
       <mwc-top-app-bar dense>
         <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
         <div slot="title">Mario Kart Wii IGT Calculator</div>
@@ -79,7 +87,11 @@ class MkwiiIgtCalcApp extends LitElement {
 
         <div class="content">
           <div class="card-content">
-            <mwc-select label="Track Count" selected=${this.selectedTrackCount}>
+            <mwc-select
+              label="Track Count"
+              selected=${this.selectedTrackCount}
+              @selected=${this.trackCountChanged}
+            >
               <mwc-list-item>32 Tracks</mwc-list-item>
               <mwc-list-item>16 Tracks</mwc-list-item>
               <mwc-list-item>Individual Cup</mwc-list-item>
@@ -88,6 +100,7 @@ class MkwiiIgtCalcApp extends LitElement {
               label="${this.categoryLabelProp}"
               id="categoryListbox"
               selected="${this.selectedCategory}"
+              @selected=${this.categoryChanged}
             >
               ${this.categoryListProp.map(
                 (item) =>
@@ -96,10 +109,23 @@ class MkwiiIgtCalcApp extends LitElement {
                   `
               )}
             </mwc-select>
-            <course-list
-              id="course-list"
-              .courses="${this.courses}"
-            ></course-list>
+            <div id="course-list">
+              ${this.courses.map(
+                (item, index) => html`
+                  <time-duration-input
+                    index="${index}"
+                    id="course-${index}"
+                    plc-minutes="${item.plcMinutes}"
+                    plc-seconds="${item.plcSeconds}"
+                    plc-milliseconds="${item.plcMilliseconds}"
+                    minutes="${item.minutes || ''}"
+                    seconds="${item.seconds || ''}"
+                    milliseconds="${item.milliseconds || ''}"
+                    label="${item.label || ''}"
+                  ></time-duration-input>
+                `
+              )}
+            </div>
             <mwc-button @click=${this.calculateTime}>Calculate</mwc-button>
             <h2>Total: ${this.total}</h2>
             <hr />
@@ -120,8 +146,6 @@ class MkwiiIgtCalcApp extends LitElement {
               readOnly
               label="splits.io ID"
               value="${this.splitsioId || ''}"
-              iconTrailing="file_copy"
-              @click="${this.copyClicked}"
             >
             </mwc-textfield>
             <mwc-icon-button
@@ -146,7 +170,7 @@ class MkwiiIgtCalcApp extends LitElement {
   private selectedCategory = 0;
 
   @property({ type: Array })
-  private categoryListProp = [];
+  private categoryListProp: string[] = [];
 
   @property({ type: String })
   private categoryLabelProp = '';
@@ -285,7 +309,7 @@ class MkwiiIgtCalcApp extends LitElement {
         duration += parseInt(course.seconds as string, 10) * 1000;
         duration += parseInt(course.milliseconds as string, 10);
         segments.push({
-          name: course.name,
+          name: course.label,
           duration,
         });
       });
@@ -303,85 +327,87 @@ class MkwiiIgtCalcApp extends LitElement {
     }
   }
 
-  // private categoryList(trackCount: number): string[] {
-  //   if (trackCount === 0) {
-  //     // 32 Tracks
-  //     return tracks32.map((elem) => elem.name);
-  //   }
+  private categoryList(trackCount: number): string[] {
+    if (trackCount === 0) {
+      // 32 Tracks
+      return tracks32.map((elem) => elem.name);
+    }
 
-  //   if (trackCount === 1) {
-  //     // 16 Tracks
-  //     return ['Nitro Tracks', 'Retro Tracks'];
-  //   }
+    if (trackCount === 1) {
+      // 16 Tracks
+      return ['Nitro Tracks', 'Retro Tracks'];
+    }
 
-  //   if (trackCount === 2) {
-  //     // Individual Cups
-  //     return [
-  //       'Mushroom Cup',
-  //       'Flower Cup',
-  //       'Star Cup',
-  //       'Special Cup',
-  //       'Shell Cup',
-  //       'Banana Cup',
-  //       'Leaf Cup',
-  //       'Lightning Cup',
-  //     ];
-  //   }
-  //   return [];
-  // }
+    if (trackCount === 2) {
+      // Individual Cups
+      return [
+        'Mushroom Cup',
+        'Flower Cup',
+        'Star Cup',
+        'Special Cup',
+        'Shell Cup',
+        'Banana Cup',
+        'Leaf Cup',
+        'Lightning Cup',
+      ];
+    }
+    return [];
+  }
 
-  // private categoryLabel(trackCount: number): 'Starting Track' | 'Category' {
-  //   if (trackCount === 0) {
-  //     return 'Starting Track';
-  //   }
+  private categoryLabel(trackCount: number): 'Starting Track' | 'Category' {
+    if (trackCount === 0) {
+      return 'Starting Track';
+    }
 
-  //   if (trackCount === 1 || trackCount === 2) {
-  //     return 'Category';
-  //   }
-  //   throw new Error('Invalid track count value');
-  // }
+    if (trackCount === 1 || trackCount === 2) {
+      return 'Category';
+    }
+    throw new Error('Invalid track count value');
+  }
 
   // TODO: unneccessary?
-  // private trackCountChanged(): void {
-  //   this.selectedCategory = -1;
-  //   // this.$.categoryTemplate.render();
-  //   // this.$.categoryListbox.forceSynchronousItemUpdate();
-  //   this.selectedCategory = 0;
-  // }
+  private trackCountChanged(event: SelectedEvent): void {
+    // this.selectedCategory = -1;
+    // this.$.categoryTemplate.render();
+    // this.$.categoryListbox.forceSynchronousItemUpdate();
+    this.categoryListProp = this.categoryList(event.detail.index as number);
+    this.categoryLabelProp = this.categoryLabel(event.detail.index as number);
+    this.selectedCategory = 0;
+  }
 
-  // private categoryChanged(newVal: number) {
-  //   if (this.selectedTrackCount === 0) {
-  //     // 32 Track
-  //     const rotatedTrackOrder = rotate(tracks32, newVal);
-  //     // Let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
-  //     this.courses = this.mapTracks(rotatedTrackOrder);
-  //   } else if (this.selectedTrackCount === 1) {
-  //     const trackOrder = tracks32.slice(newVal * 16, newVal * 16 + 16);
-  //     this.courses = this.mapTracks(trackOrder);
-  //   } else if (this.selectedTrackCount === 2) {
-  //     // Individual Cups
-  //     const trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
-  //     this.courses = this.mapTracks(trackOrder);
-  //   }
+  private categoryChanged(newVal: number) {
+    if (this.selectedTrackCount === 0) {
+      // 32 Track
+      const rotatedTrackOrder = rotate(tracks32, newVal);
+      // Let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
+      this.courses = this.mapTracks(rotatedTrackOrder);
+    } else if (this.selectedTrackCount === 1) {
+      const trackOrder = tracks32.slice(newVal * 16, newVal * 16 + 16);
+      this.courses = this.mapTracks(trackOrder);
+    } else if (this.selectedTrackCount === 2) {
+      // Individual Cups
+      const trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
+      this.courses = this.mapTracks(trackOrder);
+    }
 
-  //   this.claimMessageHidden = true;
-  //   this.total = '';
-  //   this.splitsioId = null;
-  // }
+    this.claimMessageHidden = true;
+    this.total = '';
+    this.splitsioId = null;
+  }
 
-  // private mapTracks(modTrackList: TrackData[]): TimeDurationInputAttr[] {
-  //   return modTrackList.map((elem) => {
-  //     return {
-  //       name: elem.name,
-  //       plcMinutes: elem.avgMinutes.toString(),
-  //       plcSeconds: elem.avgSeconds.toString(),
-  //       plcMilliseconds: elem.avgMilliseconds.toString(),
-  //       // minutes: null,
-  //       // seconds: null,
-  //       // milliseconds: null,
-  //     };
-  //   });
-  // }
+  private mapTracks(modTrackList: TrackData[]): TimeDurationInputAttr[] {
+    return modTrackList.map((elem) => {
+      return {
+        label: elem.name,
+        plcMinutes: elem.avgMinutes.toString(),
+        plcSeconds: elem.avgSeconds.toString(),
+        plcMilliseconds: elem.avgMilliseconds.toString(),
+        // minutes: null,
+        // seconds: null,
+        // milliseconds: null,
+      };
+    });
+  }
 
   private copyClicked(): void {
     try {
@@ -402,11 +428,11 @@ class MkwiiIgtCalcApp extends LitElement {
   }
 }
 
-// function rotate<K>(ary: K[], n: number): K[] {
-//   const l = ary.length;
-//   const offset = (n + l) % l;
-//   return ary.slice(offset).concat(ary.slice(0, offset));
-// }
+function rotate<K>(ary: K[], n: number): K[] {
+  const l = ary.length;
+  const offset = (n + l) % l;
+  return ary.slice(offset).concat(ary.slice(0, offset));
+}
 
 declare global {
   interface HTMLElementTagNameMap {

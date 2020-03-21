@@ -1,5 +1,6 @@
 import { LitElement, html, customElement, property } from 'lit-element';
-import { TimeDurationInputAttr } from './time-duration-input';
+import './time-duration-input';
+import { TimeDurationInputAttr } from './data/types';
 
 @customElement('course-list')
 export class CourseList extends LitElement {
