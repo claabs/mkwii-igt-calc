@@ -1,0 +1,7 @@
+{
+    "name": "mkwii-igt-calc",
+    "short_name": "mkwii-igt-calc",
+    "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
+    "start_url": "/index.html",
+    "display": "standalone"
+}

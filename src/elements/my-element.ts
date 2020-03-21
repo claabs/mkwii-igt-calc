@@ -12,7 +12,7 @@
  * http://polymer.github.io/PATENTS.txt
  */
 
-import {LitElement, html, customElement, property, css} from 'lit-element';
+import { LitElement, html, customElement, property, css } from 'lit-element';
 
 /**
  * An example element.
@@ -40,21 +40,21 @@ export class MyElement extends LitElement {
   /**
    * The number of times the button has been clicked.
    */
-  @property({type: Number})
+  @property({ type: Number })
   count = 0;
 
   render() {
     return html`
       <h1>Hello, ${this.name}!</h1>
-      <button @click=${this._onClick} part="button">
+      <button @click=${this.onClick} part="button">
         Click Count: ${this.count}
       </button>
       <slot></slot>
     `;
   }
 
-  private _onClick() {
-    this.count++;
+  private onClick() {
+    this.count += 1;
   }
 
   foo(): string {

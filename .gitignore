@@ -3,7 +3,9 @@
 /test/
 
 # top level source
-my-element.js
-my-element.js.map
-my-element.d.ts
-my-element.d.ts.map
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+
+!rollup.config.js
