@@ -1,4 +1,11 @@
-import { LitElement, html, customElement, property, css } from 'lit-element';
+import {
+  LitElement,
+  html,
+  customElement,
+  property,
+  css,
+  query,
+} from 'lit-element';
 import '@material/mwc-top-app-bar';
 import '@material/mwc-select';
 import '@material/mwc-list/mwc-list-item';
@@ -7,22 +14,23 @@ import '@material/mwc-icon-button';
 import '@material/mwc-textfield';
 import { TextField } from '@material/mwc-textfield';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
+import { Select } from '@material/mwc-select';
 import { tracks32, TrackData } from './data/tracks32';
 import { SplitsIOService, Split } from './services/splitsio';
 
 import './time-duration-input';
-import { TimeDurationInputAttr } from './data/types';
+import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
   static styles = css`
-    /* :host {
+    :host {
       --paper-font-common-base {
         font-family: sans-serif;
       }
       font-size: 14px;
       background-color: var(--paper-grey-50);
-    } */
+    }
 
     .content {
       display: block;
@@ -50,10 +58,6 @@ class MkwiiIgtCalcApp extends LitElement {
 
     app-drawer-layout:not([narrow]) [drawer-toggle] {
       display: none;
-    }
-
-    /* .course-row {
-      font-size: 24px;
     } */
 
     /* paper-button {
@@ -89,7 +93,8 @@ class MkwiiIgtCalcApp extends LitElement {
           <div class="card-content">
             <mwc-select
               label="Track Count"
-              selected=${this.selectedTrackCount}
+              id="trackCountSelect"
+              index=${this.selectedTrackCount}
               @selected=${this.trackCountChanged}
             >
               <mwc-list-item>32 Tracks</mwc-list-item>
@@ -98,8 +103,8 @@ class MkwiiIgtCalcApp extends LitElement {
             </mwc-select>
             <mwc-select
               label="${this.categoryLabelProp}"
-              id="categoryListbox"
-              selected="${this.selectedCategory}"
+              id="categorySelect"
+              index=${this.selectedCategory}
               @selected=${this.categoryChanged}
             >
               ${this.categoryListProp.map(
@@ -122,6 +127,7 @@ class MkwiiIgtCalcApp extends LitElement {
                     seconds="${item.seconds || ''}"
                     milliseconds="${item.milliseconds || ''}"
                     label="${item.label || ''}"
+                    @change=${this.timeDurationInputChange}
                   ></time-duration-input>
                 `
               )}
@@ -190,6 +196,11 @@ class MkwiiIgtCalcApp extends LitElement {
   @property({ type: String })
   private splitsioId: string | null = '';
 
+  @query('categorySelect')
+  private categorySelectElem!: Select | null;
+
+  @query('splitsio-id')
+  private splitsIOIdElem!: TextField | null;
   // static get properties() {
   //   return {
   //     total: {
@@ -240,7 +251,7 @@ class MkwiiIgtCalcApp extends LitElement {
     try {
       this.courses.forEach((course) => {
         if (!course.minutes || !course.seconds || !course.milliseconds) {
-          throw new Error('Missing time value');
+          throw new Error(`Missing time value on ${course.label}`);
         }
         const minInt = parseInt(course.minutes, 10);
         const secInt = parseInt(course.seconds, 10);
@@ -249,7 +260,7 @@ class MkwiiIgtCalcApp extends LitElement {
         seconds += secInt;
         milliseconds += milliInt;
         if (this.timesInvalid(minInt, secInt, milliInt)) {
-          throw new Error('Time value out of range');
+          throw new Error(`Time value out of range on ${course.label}`);
         }
       });
       seconds += Math.floor(milliseconds / 1000);
@@ -367,32 +378,48 @@ class MkwiiIgtCalcApp extends LitElement {
 
   // TODO: unneccessary?
   private trackCountChanged(event: SelectedEvent): void {
-    // this.selectedCategory = -1;
-    // this.$.categoryTemplate.render();
-    // this.$.categoryListbox.forceSynchronousItemUpdate();
-    this.categoryListProp = this.categoryList(event.detail.index as number);
-    this.categoryLabelProp = this.categoryLabel(event.detail.index as number);
-    this.selectedCategory = 0;
+    const index = event.detail.index as number;
+    this.selectedTrackCount = index;
+
+    this.categoryListProp = this.categoryList(index);
+    this.categoryLabelProp = this.categoryLabel(index);
+
+    if (!this.categorySelectElem) throw new Error('Missing categorySelect');
+    this.selectedCategory = -1;
+    this.categorySelectElem.select(-1);
+    this.categorySelectElem.layout(true);
   }
 
-  private categoryChanged(newVal: number) {
+  private categoryChanged(newVal: SelectedEvent) {
+    const index = newVal.detail.index as number;
     if (this.selectedTrackCount === 0) {
       // 32 Track
-      const rotatedTrackOrder = rotate(tracks32, newVal);
+      const rotatedTrackOrder = rotate(tracks32, index);
       // Let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
       this.courses = this.mapTracks(rotatedTrackOrder);
     } else if (this.selectedTrackCount === 1) {
-      const trackOrder = tracks32.slice(newVal * 16, newVal * 16 + 16);
+      const trackOrder = tracks32.slice(index * 16, index * 16 + 16);
       this.courses = this.mapTracks(trackOrder);
     } else if (this.selectedTrackCount === 2) {
       // Individual Cups
-      const trackOrder = tracks32.slice(newVal * 4, newVal * 4 + 4);
+      const trackOrder = tracks32.slice(index * 4, index * 4 + 4);
       this.courses = this.mapTracks(trackOrder);
+    } else {
+      this.courses = [];
     }
 
     this.claimMessageHidden = true;
     this.total = '';
     this.splitsioId = null;
+  }
+
+  private timeDurationInputChange(evt: TimeDurationInputEvent) {
+    this.courses[evt.detail.index] = {
+      ...this.courses[evt.detail.index],
+      minutes: evt.detail.minutes,
+      seconds: evt.detail.seconds,
+      milliseconds: evt.detail.milliseconds,
+    };
   }
 
   private mapTracks(modTrackList: TrackData[]): TimeDurationInputAttr[] {
@@ -402,29 +429,17 @@ class MkwiiIgtCalcApp extends LitElement {
         plcMinutes: elem.avgMinutes.toString(),
         plcSeconds: elem.avgSeconds.toString(),
         plcMilliseconds: elem.avgMilliseconds.toString(),
-        // minutes: null,
-        // seconds: null,
-        // milliseconds: null,
       };
     });
   }
 
   private copyClicked(): void {
-    try {
-      const { shadowRoot } = this;
-      if (!shadowRoot) throw new Error('Missing shadowRoot');
-      const splitsElem = shadowRoot.getElementById(
-        'splitsio-id'
-      ) as TextField | null;
-      if (!splitsElem) throw new Error('Missing splitsElem');
+    if (!this.splitsIOIdElem) throw new Error('Missing splitsElem');
 
-      splitsElem.select();
-      document.execCommand('copy');
-      // splitsElem.selectionEnd = splitsElem.selectionStart;
-      splitsElem.blur();
-    } catch (err) {
-      console.error(err);
-    }
+    this.splitsIOIdElem.select();
+    document.execCommand('copy');
+    // splitsElem.selectionEnd = splitsElem.selectionStart;
+    this.splitsIOIdElem.blur();
   }
 }
 

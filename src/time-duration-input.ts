@@ -1,50 +1,24 @@
-import { LitElement, html, customElement, property, css } from 'lit-element';
+import {
+  LitElement,
+  html,
+  customElement,
+  property,
+  css,
+  query,
+} from 'lit-element';
 import { TextField } from '@material/mwc-textfield';
 import '@material/mwc-textfield';
+import { TimeDurationInputEvent } from './data/types';
 
 @customElement('time-duration-input')
 export class TimeDurationInput extends LitElement {
-  // static get properties() {
-  //   return {
-  //     minutes: {
-  //       type: Number,
-  //       notify: true,
-  //     },
-  //     seconds: {
-  //       type: Number,
-  //       notify: true,
-  //     },
-  //     milliseconds: {
-  //       type: Number,
-  //       notify: true,
-  //     },
-  //     plcMinutes: {
-  //       type: Number,
-  //     },
-  //     plcSeconds: {
-  //       type: Number,
-  //       observer: '_padObserver',
-  //     },
-  //     plcMilliseconds: {
-  //       type: Number,
-  //       observer: '_padObserver',
-  //     },
-  //     label: {
-  //       type: String,
-  //     },
-  //     index: {
-  //       type: Number,
-  //     },
-  //   };
-  // }
-
-  @property({ type: String, attribute: true })
+  @property({ type: String, reflect: true })
   private minutes = '';
 
-  @property({ type: String, attribute: true })
+  @property({ type: String, reflect: true })
   private seconds = '';
 
-  @property({ type: String, attribute: true })
+  @property({ type: String, reflect: true })
   private milliseconds = '';
 
   @property({ type: String, attribute: true })
@@ -61,6 +35,15 @@ export class TimeDurationInput extends LitElement {
 
   @property({ type: Number, attribute: true })
   private index = 0;
+
+  // @query('#minute')
+  // private minuteElem!: TextField | null;
+
+  @query('#second')
+  private secondElem!: TextField | null;
+
+  @query('#millisecond')
+  private millisecondElem!: TextField | null;
 
   static styles = css`
     :host {
@@ -153,7 +136,7 @@ export class TimeDurationInput extends LitElement {
           min="0"
           placeholder="${this.plcMinutes}"
           type="number"
-          value="${this.minutes}"
+          value=${this.minutes}
           pattern="[0-9]"
         ></mwc-textfield>
         <div class="separator-char">:</div>
@@ -167,7 +150,7 @@ export class TimeDurationInput extends LitElement {
           min="0"
           placeholder="${this.plcSeconds}"
           type="number"
-          value="${this.seconds}"
+          value=${this.seconds}
           pattern="[0-9]"
         ></mwc-textfield>
         <div class="separator-char">.</div>
@@ -179,79 +162,61 @@ export class TimeDurationInput extends LitElement {
           ?autoValidate=${true}
           max="999"
           min="0"
-          placeholder="${this.plcMilliseconds}"
+          .placeholder=${this.plcMilliseconds}
           type="number"
-          value="${this.milliseconds}"
+          .value=${this.milliseconds}
           pattern="[0-9]"
         ></mwc-textfield>
       </div>
     `;
   }
 
-  // connectedCallback() {
-  //   super.connectedCallback();
-  //   this.padPlaceholders();
-  //   this.render();
-  // }
+  change() {
+    const changeEvt: TimeDurationInputEvent = new CustomEvent('change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        index: this.index,
+        minutes: this.minutes,
+        seconds: this.seconds,
+        milliseconds: this.milliseconds,
+      },
+    });
+    this.dispatchEvent(changeEvt);
+  }
 
   private minuteKeydown(e: KeyboardEvent) {
     if (e.target) {
-      const target = e.target as TextField;
-      const notifyChange = new CustomEvent('notify-change', {
-        detail: { index: this.index, slot: 'minutes', value: target.value },
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(notifyChange);
       if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) {
         // Semicolon, dot, or enter
-        const { shadowRoot } = this;
-        if (!shadowRoot) throw new Error('Missing shadowRoot');
-        const secondElem = shadowRoot.getElementById(
-          'second'
-        ) as TextField | null;
-        if (!secondElem) throw new Error('Missing secondElem');
-        secondElem.focus();
+        // const { shadowRoot } = this;
+        // if (!shadowRoot) throw new Error('Missing shadowRoot');
+        // const secondElem = shadowRoot.getElementById(
+        //   'second'
+        // ) as TextField | null;
+        if (!this.secondElem) throw new Error('Missing secondElem');
+        this.secondElem.focus();
       }
     }
   }
 
   private secondKeydown(e: KeyboardEvent) {
     if (e.target) {
-      const target = e.target as TextField;
-      const notifyChange = new CustomEvent('notify-change', {
-        detail: { index: this.index, slot: 'seconds', value: target.value },
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(notifyChange);
       if (e.keyCode === 110 || e.keyCode === 13) {
         // Dot or enter
-        const { shadowRoot } = this;
-        if (!shadowRoot) throw new Error('Missing shadowRoot');
-        const msElem = shadowRoot.getElementById(
-          'millisecond'
-        ) as TextField | null;
-        if (!msElem) throw new Error('Missing msElem');
-        msElem.focus();
+        // const { shadowRoot } = this;
+        // if (!shadowRoot) throw new Error('Missing shadowRoot');
+        // const msElem = shadowRoot.getElementById(
+        //   'millisecond'
+        // ) as TextField | null;
+        if (!this.millisecondElem) throw new Error('Missing msElem');
+        this.millisecondElem.focus();
       }
     }
   }
 
   private msKeydown(e: KeyboardEvent) {
     if (e.target) {
-      const target = e.target as TextField;
-      const notifyChange = new CustomEvent('notify-change', {
-        detail: {
-          index: this.index,
-          slot: 'milliseconds',
-          value: target.value,
-        },
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(notifyChange);
-
       if (e.keyCode === 13) {
         // Enter
         const neighbor = (this.getRootNode() as TimeDurationInput).querySelector(
@@ -273,32 +238,38 @@ export class TimeDurationInput extends LitElement {
   private minuteBlur(e: KeyboardEvent) {
     if (e.target) {
       const target = e.target as TextField;
+      this.minutes = target.value;
       if (!target.value) {
         target.setCustomValidity('Missing');
       }
+      this.change();
     }
   }
 
   private secondBlur(e: KeyboardEvent) {
     if (e.target) {
       const target = e.target as TextField;
+      this.seconds = target.value;
       if (!target.value) {
         target.setCustomValidity('Missing');
       } else {
         target.value = target.value.padStart(2, '0');
         // Doesn't work on Firefox due to old bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1005603
       }
+      this.change();
     }
   }
 
   private msBlur(e: KeyboardEvent) {
     if (e.target) {
       const target = e.target as TextField;
+      this.milliseconds = target.value;
       if (!target.value) {
         target.setCustomValidity('Missing');
       } else {
         target.value = target.value.padEnd(3, '0');
       }
+      this.change();
     }
   }
 
