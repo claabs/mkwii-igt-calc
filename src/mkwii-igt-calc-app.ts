@@ -103,7 +103,7 @@ class MkwiiIgtCalcApp extends LitElement {
             </mwc-select>
             <mwc-select
               label="${this.categoryLabelProp}"
-              id="categorySelect"
+              id="category-select"
               index=${this.selectedCategory}
               @selected=${this.categoryChanged}
             >
@@ -120,9 +120,9 @@ class MkwiiIgtCalcApp extends LitElement {
                   <time-duration-input
                     index="${index}"
                     id="course-${index}"
-                    plc-minutes="${item.plcMinutes}"
-                    plc-seconds="${item.plcSeconds}"
-                    plc-milliseconds="${item.plcMilliseconds}"
+                    plcMinutes="${item.plcMinutes}"
+                    plcSeconds="${item.plcSeconds}"
+                    plcMilliseconds="${item.plcMilliseconds}"
                     minutes="${item.minutes || ''}"
                     seconds="${item.seconds || ''}"
                     milliseconds="${item.milliseconds || ''}"
@@ -196,52 +196,11 @@ class MkwiiIgtCalcApp extends LitElement {
   @property({ type: String })
   private splitsioId: string | null = '';
 
-  @query('categorySelect')
+  @query('#category-select')
   private categorySelectElem!: Select | null;
 
-  @query('splitsio-id')
+  @query('#splitsio-id')
   private splitsIOIdElem!: TextField | null;
-  // static get properties() {
-  //   return {
-  //     total: {
-  //       type: String,
-  //     },
-  //     selectedTrackCount: {
-  //       type: Number,
-  //       value: 0,
-  //       observer: 'trackCountChanged',
-  //     },
-  //     selectedCategory: {
-  //       type: Number,
-  //       value: 0,
-  //       observer: 'categoryChanged',
-  //     },
-  //     categoryList: {
-  //       type: Array,
-  //       computed: 'categoryList(selectedTrackCount)',
-  //     },
-  //     categoryLabel: {
-  //       type: String,
-  //       computed: 'categoryLabel(selectedTrackCount)',
-  //     },
-  //     courses: {
-  //       type: Array,
-  //     },
-  //     attrSelected: {
-  //       type: String,
-  //     },
-  //     claimLink: {
-  //       type: String,
-  //     },
-  //     claimMessageHidden: {
-  //       type: Boolean,
-  //       value: true,
-  //     },
-  //     splitsioId: {
-  //       type: String,
-  //     },
-  //   };
-  // }
 
   private calculateTime(): boolean {
     let hours = 0;
@@ -302,7 +261,7 @@ class MkwiiIgtCalcApp extends LitElement {
 
   private async uploadSplits() {
     this.claimMessageHidden = true;
-    if (this.calculateTime()) {
+    if (!this.calculateTime()) {
       this.splitsioId = null;
     } else {
       // Get category name
@@ -388,6 +347,7 @@ class MkwiiIgtCalcApp extends LitElement {
     this.selectedCategory = -1;
     this.categorySelectElem.select(-1);
     this.categorySelectElem.layout(true);
+    this.courses = [];
   }
 
   private categoryChanged(newVal: SelectedEvent) {

@@ -134,7 +134,7 @@ export class TimeDurationInput extends LitElement {
           ?autoValidate=${true}
           max="9"
           min="0"
-          placeholder="${this.plcMinutes}"
+          placeholder=${this.plcMinutes}
           type="number"
           value=${this.minutes}
           pattern="[0-9]"
@@ -148,7 +148,7 @@ export class TimeDurationInput extends LitElement {
           ?autoValidate=${true}
           max="59"
           min="0"
-          placeholder="${this.plcSeconds}"
+          placeholder=${this.plcSeconds}
           type="number"
           value=${this.seconds}
           pattern="[0-9]"
@@ -162,9 +162,9 @@ export class TimeDurationInput extends LitElement {
           ?autoValidate=${true}
           max="999"
           min="0"
-          .placeholder=${this.plcMilliseconds}
+          placeholder=${this.plcMilliseconds}
           type="number"
-          .value=${this.milliseconds}
+          value=${this.milliseconds}
           pattern="[0-9]"
         ></mwc-textfield>
       </div>
