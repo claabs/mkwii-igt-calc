@@ -181,14 +181,6 @@ export class TimeDurationInput extends LitElement {
     this.dispatchEvent(changeEvt);
   }
 
-  private minuteInput(e: InputEvent) {
-    if (e.target) {
-      if (!this.minuteElem) throw new Error('Missing minuteElem');
-      const val = this.minuteElem.value.replace(/[^0-9]/, '');
-      this.minuteElem.value = val;
-    }
-  }
-
   private minuteKeydown(e: KeyboardEvent) {
     if (e.target) {
       if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) {
@@ -196,6 +188,14 @@ export class TimeDurationInput extends LitElement {
         if (!this.secondElem) throw new Error('Missing secondElem');
         this.secondElem.focus();
       }
+    }
+  }
+
+  private minuteInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.minuteElem) throw new Error('Missing minuteElem');
+      const val = this.minuteElem.value.replace(/[^0-9]/, '');
+      this.minuteElem.value = val;
     }
   }
 
@@ -215,11 +215,14 @@ export class TimeDurationInput extends LitElement {
     };
   }
 
-  private secondInput(e: InputEvent) {
+  private minuteBlur(e: KeyboardEvent) {
     if (e.target) {
-      if (!this.secondElem) throw new Error('Missing secondElem');
-      const val = this.secondElem.value.replace(/[^0-9]/, '');
-      this.secondElem.value = val;
+      const target = e.target as TextField;
+      this.minutes = target.value;
+      if (!target.value) {
+        target.setCustomValidity('Missing');
+      }
+      this.change();
     }
   }
 
@@ -230,6 +233,14 @@ export class TimeDurationInput extends LitElement {
         if (!this.millisecondElem) throw new Error('Missing msElem');
         this.millisecondElem.focus();
       }
+    }
+  }
+
+  private secondInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.secondElem) throw new Error('Missing secondElem');
+      const val = this.secondElem.value.replace(/[^0-9]/, '');
+      this.secondElem.value = val;
     }
   }
 
@@ -250,11 +261,18 @@ export class TimeDurationInput extends LitElement {
     };
   }
 
-  private msInput(e: InputEvent) {
+  private secondBlur(e: KeyboardEvent) {
     if (e.target) {
-      if (!this.millisecondElem) throw new Error('Missing msElem');
-      const val = this.millisecondElem.value.replace(/[^0-9]/, '');
-      this.millisecondElem.value = val;
+      const target = e.target as TextField;
+
+      if (!target.value) {
+        target.setCustomValidity('Missing');
+      } else {
+        if (!this.secondElem) throw new Error('Missing secondElem');
+        this.secondElem.value = target.value.padStart(2, '0');
+      }
+      this.seconds = target.value;
+      this.change();
     }
   }
 
@@ -278,6 +296,14 @@ export class TimeDurationInput extends LitElement {
     }
   }
 
+  private msInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.millisecondElem) throw new Error('Missing msElem');
+      const val = this.millisecondElem.value.replace(/[^0-9]/, '');
+      this.millisecondElem.value = val;
+    }
+  }
+
   private msValidator(
     value: string,
     nativeValidity: ValidityState
@@ -292,32 +318,6 @@ export class TimeDurationInput extends LitElement {
       rangeOverflow: tooLarge,
       rangeUnderflow: tooSmall,
     };
-  }
-
-  private minuteBlur(e: KeyboardEvent) {
-    if (e.target) {
-      const target = e.target as TextField;
-      this.minutes = target.value;
-      if (!target.value) {
-        target.setCustomValidity('Missing');
-      }
-      this.change();
-    }
-  }
-
-  private secondBlur(e: KeyboardEvent) {
-    if (e.target) {
-      const target = e.target as TextField;
-
-      if (!target.value) {
-        target.setCustomValidity('Missing');
-      } else {
-        if (!this.secondElem) throw new Error('Missing secondElem');
-        this.secondElem.value = target.value.padStart(2, '0');
-      }
-      this.seconds = target.value;
-      this.change();
-    }
   }
 
   private msBlur(e: KeyboardEvent) {
