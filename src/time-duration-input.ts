@@ -120,14 +120,14 @@ export class TimeDurationInput extends LitElement {
           @input=${this.minuteInput}
           @blur=${this.minuteBlur}
           ?autoValidate=${true}
-          max="9"
-          min="0"
           placeholder=${this.plcMinutes}
           type="text"
+          ?required=${true}
           value=${this.minutes}
           pattern="[0-9]+"
           inputMode="numeric"
           maxLength="1"
+          .validityTransform=${this.minuteValidator}
         ></mwc-textfield>
         <div class="separator-char">:</div>
         <mwc-textfield
@@ -137,14 +137,14 @@ export class TimeDurationInput extends LitElement {
           @input=${this.secondInput}
           @blur=${this.secondBlur}
           ?autoValidate=${true}
-          max="59"
-          min="0"
           placeholder=${this.plcSeconds}
           type="text"
+          ?required=${true}
           value=${this.seconds}
           pattern="[0-9]+"
           inputMode="numeric"
           maxLength="2"
+          .validityTransform=${this.secondValidator}
         ></mwc-textfield>
         <div class="separator-char">.</div>
         <mwc-textfield
@@ -154,14 +154,14 @@ export class TimeDurationInput extends LitElement {
           @input=${this.msInput}
           @blur=${this.msBlur}
           ?autoValidate=${true}
-          max="999"
-          min="0"
           placeholder=${this.plcMilliseconds}
           type="text"
+          ?required=${true}
           value=${this.milliseconds}
           pattern="[0-9]+"
           inputMode="numeric"
           maxLength="3"
+          .validityTransform=${this.msValidator}
         ></mwc-textfield>
       </div>
     `;
@@ -199,6 +199,22 @@ export class TimeDurationInput extends LitElement {
     }
   }
 
+  private minuteValidator(
+    value: string,
+    nativeValidity: ValidityState
+  ): Partial<ValidityState> {
+    if (!nativeValidity.valid) return nativeValidity;
+    const valueNumber = Number(value);
+    const isInteger = Number.isInteger(valueNumber);
+    const tooSmall = valueNumber < 0;
+    const tooLarge = valueNumber > 9;
+    return {
+      typeMismatch: !isInteger,
+      rangeOverflow: tooLarge,
+      rangeUnderflow: tooSmall,
+    };
+  }
+
   private secondInput(e: InputEvent) {
     if (e.target) {
       if (!this.secondElem) throw new Error('Missing secondElem');
@@ -215,6 +231,23 @@ export class TimeDurationInput extends LitElement {
         this.millisecondElem.focus();
       }
     }
+  }
+
+  private secondValidator(
+    value: string,
+    nativeValidity: ValidityState
+  ): Partial<ValidityState> {
+    if (!nativeValidity.valid) return nativeValidity;
+    const valueNumber = Number(value);
+    const isNotInteger = !Number.isInteger(valueNumber);
+    const tooSmall = valueNumber < 0;
+    const tooLarge = valueNumber > 59;
+    return {
+      valid: !(isNotInteger || tooLarge || tooSmall),
+      typeMismatch: isNotInteger,
+      rangeOverflow: tooLarge,
+      rangeUnderflow: tooSmall,
+    };
   }
 
   private msInput(e: InputEvent) {
@@ -243,6 +276,22 @@ export class TimeDurationInput extends LitElement {
         }
       }
     }
+  }
+
+  private msValidator(
+    value: string,
+    nativeValidity: ValidityState
+  ): Partial<ValidityState> {
+    if (!nativeValidity.valid) return nativeValidity;
+    const valueNumber = Number(value);
+    const isInteger = Number.isInteger(valueNumber);
+    const tooSmall = valueNumber < 0;
+    const tooLarge = valueNumber > 999;
+    return {
+      typeMismatch: !isInteger,
+      rangeOverflow: tooLarge,
+      rangeUnderflow: tooSmall,
+    };
   }
 
   private minuteBlur(e: KeyboardEvent) {
