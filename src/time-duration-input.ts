@@ -48,8 +48,8 @@ export class TimeDurationInput extends LitElement {
   @property({ type: Number, attribute: true })
   private index = 0;
 
-  // @query('#minute')
-  // private minuteElem!: TextField | null;
+  @query('#minute')
+  private minuteElem!: TextField | null;
 
   @query('#second')
   private secondElem!: TextField | null;
@@ -60,7 +60,6 @@ export class TimeDurationInput extends LitElement {
   static styles = css`
     :host {
       display: block;
-      font-size: 24px;
     }
 
     :host([focused]) {
@@ -72,43 +71,25 @@ export class TimeDurationInput extends LitElement {
     } */
 
     .separator-char {
-      line-height: 28px;
+      /* line-height: 28px; */
       padding: 8px 0 10px 0;
-      /* color: var(--paper-input-container-shared-input-style_-_color); */
+      /* font-size: 24px; */
     }
 
     .minute {
-      /* --paper-input-container-shared-input-style: {
-        width: 1ch;
-        -webkit-appearance: textfield;
-      } */
+      width: calc(1ch + 32px);
       text-align: right;
     }
 
     .second {
-      /* --paper-input-container-shared-input-style: {
-        width: 2ch;
-        -webkit-appearance: textfield;
-      } */
+      width: calc(2ch + 32px);
       text-align: right;
     }
 
     .millisecond {
-      /* --paper-input-container-shared-input-style: {
-        width: 3ch;
-        -webkit-appearance: textfield;
-      } */
+      width: calc(3ch + 32px);
       text-align: left;
     }
-    /* 
-    paper-input {
-      --paper-input-container-input-webkit-spinner: {
-        -webkit-appearance: none;
-      }
-      --paper-input-container-input: {
-        font-size: 24px;
-      }
-    } */
 
     .layout {
       display: flex;
@@ -126,12 +107,6 @@ export class TimeDurationInput extends LitElement {
       -webkit-align-items: center;
       align-items: center;
     }
-
-    /* 
-    .floated-label-placeholder {
-      @apply --paper-font-caption;
-      color: var(--paper-input-container-color, var(--secondary-text-color));
-    } */
   `;
 
   render() {
@@ -142,28 +117,34 @@ export class TimeDurationInput extends LitElement {
           id="minute"
           class="minute"
           @keydown=${this.minuteKeydown}
+          @input=${this.minuteInput}
           @blur=${this.minuteBlur}
           ?autoValidate=${true}
           max="9"
           min="0"
           placeholder=${this.plcMinutes}
-          type="number"
+          type="text"
           value=${this.minutes}
-          pattern="[0-9]"
+          pattern="[0-9]+"
+          inputMode="numeric"
+          maxLength="1"
         ></mwc-textfield>
         <div class="separator-char">:</div>
         <mwc-textfield
           id="second"
           class="second"
           @keydown=${this.secondKeydown}
+          @input=${this.secondInput}
           @blur=${this.secondBlur}
           ?autoValidate=${true}
           max="59"
           min="0"
           placeholder=${this.plcSeconds}
-          type="number"
+          type="text"
           value=${this.seconds}
-          pattern="[0-9]"
+          pattern="[0-9]+"
+          inputMode="numeric"
+          maxLength="2"
         ></mwc-textfield>
         <div class="separator-char">.</div>
         <mwc-textfield
@@ -176,9 +157,11 @@ export class TimeDurationInput extends LitElement {
           max="999"
           min="0"
           placeholder=${this.plcMilliseconds}
-          type="number"
+          type="text"
           value=${this.milliseconds}
-          pattern="[0-9]"
+          pattern="[0-9]+"
+          inputMode="numeric"
+          maxLength="3"
         ></mwc-textfield>
       </div>
     `;
@@ -198,6 +181,14 @@ export class TimeDurationInput extends LitElement {
     this.dispatchEvent(changeEvt);
   }
 
+  private minuteInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.minuteElem) throw new Error('Missing minuteElem');
+      const val = this.minuteElem.value.replace(/[^0-9]/, '');
+      this.minuteElem.value = val;
+    }
+  }
+
   private minuteKeydown(e: KeyboardEvent) {
     if (e.target) {
       if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) {
@@ -205,6 +196,14 @@ export class TimeDurationInput extends LitElement {
         if (!this.secondElem) throw new Error('Missing secondElem');
         this.secondElem.focus();
       }
+    }
+  }
+
+  private secondInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.secondElem) throw new Error('Missing secondElem');
+      const val = this.secondElem.value.replace(/[^0-9]/, '');
+      this.secondElem.value = val;
     }
   }
 
@@ -220,8 +219,8 @@ export class TimeDurationInput extends LitElement {
 
   private msInput(e: InputEvent) {
     if (e.target) {
-      if (!this.millisecondElem) throw new Error('Missing secondElem');
-      const val = this.millisecondElem.value.replace(/[.n]/, '');
+      if (!this.millisecondElem) throw new Error('Missing msElem');
+      const val = this.millisecondElem.value.replace(/[^0-9]/, '');
       this.millisecondElem.value = val;
     }
   }
