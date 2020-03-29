@@ -265,7 +265,7 @@ class MkwiiIgtCalcApp extends LitElement {
       this.splitsioId = null;
     } else {
       // Get category name
-      let categoryNameLong;
+      let categoryNameLong = '';
       if (this.selectedTrackCount === 0) {
         categoryNameLong = '32 Tracks';
       } else {
@@ -352,6 +352,7 @@ class MkwiiIgtCalcApp extends LitElement {
 
   private categoryChanged(newVal: SelectedEvent) {
     const index = newVal.detail.index as number;
+    this.selectedCategory = index;
     if (this.selectedTrackCount === 0) {
       // 32 Track
       const rotatedTrackOrder = rotate(tracks32, index);
