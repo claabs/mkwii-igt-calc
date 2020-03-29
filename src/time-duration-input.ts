@@ -203,16 +203,7 @@ export class TimeDurationInput extends LitElement {
     value: string,
     nativeValidity: ValidityState
   ): Partial<ValidityState> {
-    if (!nativeValidity.valid) return nativeValidity;
-    const valueNumber = Number(value);
-    const isInteger = Number.isInteger(valueNumber);
-    const tooSmall = valueNumber < 0;
-    const tooLarge = valueNumber > 9;
-    return {
-      typeMismatch: !isInteger,
-      rangeOverflow: tooLarge,
-      rangeUnderflow: tooSmall,
-    };
+    return validateTime(value, nativeValidity, 0, 9);
   }
 
   private minuteBlur(e: KeyboardEvent) {
@@ -248,17 +239,7 @@ export class TimeDurationInput extends LitElement {
     value: string,
     nativeValidity: ValidityState
   ): Partial<ValidityState> {
-    if (!nativeValidity.valid) return nativeValidity;
-    const valueNumber = Number(value);
-    const isNotInteger = !Number.isInteger(valueNumber);
-    const tooSmall = valueNumber < 0;
-    const tooLarge = valueNumber > 59;
-    return {
-      valid: !(isNotInteger || tooLarge || tooSmall),
-      typeMismatch: isNotInteger,
-      rangeOverflow: tooLarge,
-      rangeUnderflow: tooSmall,
-    };
+    return validateTime(value, nativeValidity, 0, 59);
   }
 
   private secondBlur(e: KeyboardEvent) {
@@ -308,16 +289,7 @@ export class TimeDurationInput extends LitElement {
     value: string,
     nativeValidity: ValidityState
   ): Partial<ValidityState> {
-    if (!nativeValidity.valid) return nativeValidity;
-    const valueNumber = Number(value);
-    const isInteger = Number.isInteger(valueNumber);
-    const tooSmall = valueNumber < 0;
-    const tooLarge = valueNumber > 999;
-    return {
-      typeMismatch: !isInteger,
-      rangeOverflow: tooLarge,
-      rangeUnderflow: tooSmall,
-    };
+    return validateTime(value, nativeValidity, 0, 999);
   }
 
   private msBlur(e: KeyboardEvent) {
@@ -339,4 +311,23 @@ declare global {
   interface HTMLElementTagNameMap {
     'time-duration-input': TimeDurationInput;
   }
+}
+
+function validateTime(
+  value: string,
+  nativeValidity: ValidityState,
+  min: number,
+  max: number
+): Partial<ValidityState> {
+  if (!nativeValidity.valid) return nativeValidity;
+  const valueNumber = Number(value);
+  const isNotInteger = !Number.isInteger(valueNumber);
+  const tooSmall = valueNumber < min;
+  const tooLarge = valueNumber > max;
+  return {
+    valid: !(isNotInteger || tooLarge || tooSmall),
+    typeMismatch: isNotInteger,
+    rangeOverflow: tooLarge,
+    rangeUnderflow: tooSmall,
+  };
 }
