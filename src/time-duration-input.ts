@@ -24,10 +24,22 @@ export class TimeDurationInput extends LitElement {
   @property({ type: String, attribute: true })
   private plcMinutes = '';
 
-  @property({ type: String, attribute: true })
+  @property({
+    type: String,
+    attribute: true,
+    converter: {
+      fromAttribute: (value: string): string => value.padStart(2, '0'),
+    },
+  })
   private plcSeconds = '';
 
-  @property({ type: String, attribute: true })
+  @property({
+    type: String,
+    attribute: true,
+    converter: {
+      fromAttribute: (value: string): string => value.padEnd(3, '0'),
+    },
+  })
   private plcMilliseconds = '';
 
   @property({ type: String, attribute: true })
@@ -158,6 +170,7 @@ export class TimeDurationInput extends LitElement {
           id="millisecond"
           class="millisecond"
           @keydown=${this.msKeydown}
+          @input=${this.msInput}
           @blur=${this.msBlur}
           ?autoValidate=${true}
           max="999"
@@ -189,11 +202,6 @@ export class TimeDurationInput extends LitElement {
     if (e.target) {
       if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) {
         // Semicolon, dot, or enter
-        // const { shadowRoot } = this;
-        // if (!shadowRoot) throw new Error('Missing shadowRoot');
-        // const secondElem = shadowRoot.getElementById(
-        //   'second'
-        // ) as TextField | null;
         if (!this.secondElem) throw new Error('Missing secondElem');
         this.secondElem.focus();
       }
@@ -204,14 +212,17 @@ export class TimeDurationInput extends LitElement {
     if (e.target) {
       if (e.keyCode === 110 || e.keyCode === 13) {
         // Dot or enter
-        // const { shadowRoot } = this;
-        // if (!shadowRoot) throw new Error('Missing shadowRoot');
-        // const msElem = shadowRoot.getElementById(
-        //   'millisecond'
-        // ) as TextField | null;
         if (!this.millisecondElem) throw new Error('Missing msElem');
         this.millisecondElem.focus();
       }
+    }
+  }
+
+  private msInput(e: InputEvent) {
+    if (e.target) {
+      if (!this.millisecondElem) throw new Error('Missing secondElem');
+      const val = this.millisecondElem.value.replace(/[.n]/, '');
+      this.millisecondElem.value = val;
     }
   }
 
@@ -249,13 +260,14 @@ export class TimeDurationInput extends LitElement {
   private secondBlur(e: KeyboardEvent) {
     if (e.target) {
       const target = e.target as TextField;
-      this.seconds = target.value;
+
       if (!target.value) {
         target.setCustomValidity('Missing');
       } else {
-        target.value = target.value.padStart(2, '0');
-        // Doesn't work on Firefox due to old bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1005603
+        if (!this.secondElem) throw new Error('Missing secondElem');
+        this.secondElem.value = target.value.padStart(2, '0');
       }
+      this.seconds = target.value;
       this.change();
     }
   }
@@ -263,38 +275,16 @@ export class TimeDurationInput extends LitElement {
   private msBlur(e: KeyboardEvent) {
     if (e.target) {
       const target = e.target as TextField;
-      this.milliseconds = target.value;
       if (!target.value) {
         target.setCustomValidity('Missing');
       } else {
-        target.value = target.value.padEnd(3, '0');
+        if (!this.millisecondElem) throw new Error('Missing secondElem');
+        this.millisecondElem.value = target.value.padEnd(3, '0');
       }
+      this.milliseconds = target.value;
       this.change();
     }
   }
-
-  // private padObserver() {
-  //   this.padPlaceholders();
-  // }
-
-  // private padPlaceholders() {
-  //   const { shadowRoot } = this;
-  //   if (shadowRoot) {
-  //     const secondElem = shadowRoot.getElementById(
-  //       'second'
-  //     ) as TextField | null;
-  //     if (secondElem)
-  //       secondElem.placeholder = secondElem.placeholder
-  //         .toString()
-  //         .padStart(2, '0');
-
-  //     const msElem = shadowRoot.getElementById(
-  //       'millisecond'
-  //     ) as TextField | null;
-  //     if (msElem)
-  //       msElem.placeholder = msElem.placeholder.toString().padEnd(3, '0');
-  //   }
-  // }
 }
 
 declare global {
