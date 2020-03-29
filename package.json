@@ -1,7 +1,7 @@
 {
-  "name": "lit-element-starter-ts",
-  "version": "0.0.0",
-  "description": "A simple web component",
+  "name": "mkwii-igt-calc",
+  "version": "2.0.0",
+  "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
   "main": "mkwii-igt-calc-app.js",
   "module": "mkwii-igt-calc-app.js",
   "type": "module",
@@ -23,12 +23,12 @@
   "author": "The Polymer Authors",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@material/mwc-button": "^0.14.0",
-    "@material/mwc-icon-button": "^0.14.0",
-    "@material/mwc-list": "^0.14.0",
-    "@material/mwc-select": "^0.14.0",
-    "@material/mwc-textfield": "^0.14.0",
-    "@material/mwc-top-app-bar": "^0.14.0",
+    "@material/mwc-button": "^0.14.1",
+    "@material/mwc-icon-button": "^0.14.1",
+    "@material/mwc-list": "^0.14.1",
+    "@material/mwc-select": "^0.14.1",
+    "@material/mwc-textfield": "^0.14.1",
+    "@material/mwc-top-app-bar": "^0.14.1",
     "lit-element": "^2.3.1"
   },
   "devDependencies": {

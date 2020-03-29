@@ -84,7 +84,7 @@ export class SplitsIOService {
       timer: {
         shortname: 'mkwii-igt-calc',
         longname: 'Mario Kart Wii In-game Time Calculator',
-        version: '1.0.0',
+        version: '2.0.0',
         webstie: 'https://charlocharlie.github.io/mkwii-igt-calc/',
       },
       game: {
