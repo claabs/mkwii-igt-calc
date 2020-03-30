@@ -18,9 +18,9 @@ import resolve from 'rollup-plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 
 export default {
-  input: 'mkwii-igt-calc-app.js',
+  input: 'dist/mkwii-igt-calc-app.js',
   output: {
-    file: 'mkwii-igt-calc-app.bundled.js',
+    file: 'dist/mkwii-igt-calc-app.bundled.js',
     format: 'esm',
   },
   onwarn(warning) {

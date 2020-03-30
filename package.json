@@ -13,7 +13,7 @@
     "analyze": "wca analyze \"src/**/*.ts\" --outFile custom-elements.json",
     "serve": "es-dev-server --node-resolve --watch",
     "watch": "concurrently \"npm run build:watch\" \"npm run serve\"",
-    "checksize": "rollup -c ; cat my-element.bundled.js | gzip -9 | wc -c ; rm my-element.bundled.js"
+    "checksize": "rollup -c && cat dist/mkwii-igt-calc-app.bundled.js | gzip -9 | wc -c && rm dist/mkwii-igt-calc-app.bundled.js"
   },
   "keywords": [
     "web component",
@@ -21,7 +21,7 @@
     "typescript"
   ],
   "author": "The Polymer Authors",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "dependencies": {
     "@material/mwc-button": "^0.14.1",
     "@material/mwc-icon-button": "^0.14.1",
