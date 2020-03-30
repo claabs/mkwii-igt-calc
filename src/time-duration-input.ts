@@ -60,6 +60,10 @@ export class TimeDurationInput extends LitElement {
   static styles = css`
     :host {
       display: block;
+      font-family: var(
+        --mdc-typography-subtitle1-font-family,
+        var(--mdc-typography-font-family, Roboto, sans-serif)
+      );
     }
 
     :host([focused]) {
@@ -71,23 +75,22 @@ export class TimeDurationInput extends LitElement {
     } */
 
     .separator-char {
-      /* line-height: 28px; */
-      padding: 8px 0 10px 0;
+      padding: 1em 0 0 0;
       /* font-size: 24px; */
     }
 
     .minute {
-      width: calc(1ch + 32px);
+      width: 1ch;
       text-align: right;
     }
 
     .second {
-      width: calc(2ch + 32px);
+      width: 2ch;
       text-align: right;
     }
 
     .millisecond {
-      width: calc(3ch + 32px);
+      width: 3ch;
       text-align: left;
     }
 
@@ -112,7 +115,7 @@ export class TimeDurationInput extends LitElement {
   render() {
     return html`
       <div class="floated-label-placeholder">${this.label}</div>
-      <div class="layout horizontal center">
+      <div class="layout horizontal">
         <mwc-textfield
           id="minute"
           class="minute"
@@ -128,6 +131,7 @@ export class TimeDurationInput extends LitElement {
           inputMode="numeric"
           maxLength="1"
           .validityTransform=${this.minuteValidator}
+          ?fullwidth=${true}
         ></mwc-textfield>
         <div class="separator-char">:</div>
         <mwc-textfield
@@ -145,6 +149,7 @@ export class TimeDurationInput extends LitElement {
           inputMode="numeric"
           maxLength="2"
           .validityTransform=${this.secondValidator}
+          ?fullwidth=${true}
         ></mwc-textfield>
         <div class="separator-char">.</div>
         <mwc-textfield
@@ -162,6 +167,7 @@ export class TimeDurationInput extends LitElement {
           inputMode="numeric"
           maxLength="3"
           .validityTransform=${this.msValidator}
+          ?fullwidth=${true}
         ></mwc-textfield>
       </div>
     `;
