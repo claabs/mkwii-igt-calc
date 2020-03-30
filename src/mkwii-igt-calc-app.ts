@@ -108,10 +108,7 @@ class MkwiiIgtCalcApp extends LitElement {
               @selected=${this.categoryChanged}
             >
               ${this.categoryListProp.map(
-                (item) =>
-                  html`
-                    <mwc-list-item>${item}</mwc-list-item>
-                  `
+                (item) => html` <mwc-list-item>${item}</mwc-list-item> `
               )}
             </mwc-select>
             <div id="course-list">
