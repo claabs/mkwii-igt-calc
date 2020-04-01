@@ -7,11 +7,11 @@ import {
   query,
 } from 'lit-element';
 import '@material/mwc-top-app-bar';
-import '@material/mwc-select';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-button';
 import '@material/mwc-icon-button';
 import '@material/mwc-textfield';
+import './elements/mkw-select';
 import { TextField } from '@material/mwc-textfield';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
 import { Select } from '@material/mwc-select';
@@ -25,11 +25,7 @@ import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
 class MkwiiIgtCalcApp extends LitElement {
   static styles = css`
     :host {
-      --paper-font-common-base {
-        font-family: sans-serif;
-      }
       font-size: 14px;
-      background-color: var(--paper-grey-50);
     }
 
     .content {
@@ -38,6 +34,10 @@ class MkwiiIgtCalcApp extends LitElement {
       max-width: 600px;
       padding: 0 5px;
       margin: 5px auto;
+    }
+
+    .select-boxes {
+      margin-bottom: 16px;
     }
 
     /* paper-card {
@@ -78,6 +78,13 @@ class MkwiiIgtCalcApp extends LitElement {
       -webkit-flex-direction: row;
       flex-direction: row;
     }
+
+    .layout.center,
+    .layout.center-center {
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
   `;
 
   render() {
@@ -90,59 +97,59 @@ class MkwiiIgtCalcApp extends LitElement {
         <mwc-icon-button icon="favorite" slot="actionItems"></mwc-icon-button>
 
         <div class="content">
-          <div class="card-content">
-            <mwc-select
+          <div class="select-boxes">
+            <mkw-select
               label="Track Count"
               id="trackCountSelect"
-              index=${this.selectedTrackCount}
               @selected=${this.trackCountChanged}
             >
               <mwc-list-item>32 Tracks</mwc-list-item>
               <mwc-list-item>16 Tracks</mwc-list-item>
               <mwc-list-item>Individual Cup</mwc-list-item>
-            </mwc-select>
-            <mwc-select
+            </mkw-select>
+            <mkw-select
               label="${this.categoryLabelProp}"
               id="category-select"
-              index=${this.selectedCategory}
               @selected=${this.categoryChanged}
             >
               ${this.categoryListProp.map(
                 (item) => html` <mwc-list-item>${item}</mwc-list-item> `
               )}
-            </mwc-select>
-            <div id="course-list">
-              ${this.courses.map(
-                (item, index) => html`
-                  <time-duration-input
-                    index="${index}"
-                    id="course-${index}"
-                    plcMinutes="${item.plcMinutes}"
-                    plcSeconds="${item.plcSeconds}"
-                    plcMilliseconds="${item.plcMilliseconds}"
-                    minutes="${item.minutes || ''}"
-                    seconds="${item.seconds || ''}"
-                    milliseconds="${item.milliseconds || ''}"
-                    label="${item.label || ''}"
-                    @change=${this.timeDurationInputChange}
-                  ></time-duration-input>
-                `
-              )}
-            </div>
-            <mwc-button @click=${this.calculateTime}>Calculate</mwc-button>
-            <h2>Total: ${this.total}</h2>
-            <hr />
-            <div class="layout horizontal">
-              <mwc-button @click=${this.uploadSplits}
-                >Upload to Splits.io</mwc-button
-              >
-              <a
-                href="${this.claimLink}"
-                target="_blank"
-                ?hidden=${this.claimMessageHidden}
-                ><mwc-button>Claim Splits.io Run</mwc-button></a
-              >
-            </div>
+            </mkw-select>
+          </div>
+          <div id="course-list">
+            ${this.courses.map(
+              (item, index) => html`
+                <time-duration-input
+                  index="${index}"
+                  id="course-${index}"
+                  plcMinutes="${item.plcMinutes}"
+                  plcSeconds="${item.plcSeconds}"
+                  plcMilliseconds="${item.plcMilliseconds}"
+                  minutes="${item.minutes || ''}"
+                  seconds="${item.seconds || ''}"
+                  milliseconds="${item.milliseconds || ''}"
+                  label="${item.label || ''}"
+                  @change=${this.timeDurationInputChange}
+                ></time-duration-input>
+              `
+            )}
+          </div>
+          <mwc-button @click=${this.calculateTime} raised>Calculate</mwc-button>
+          <h2>Total: ${this.total}</h2>
+          <hr />
+          <div class="layout horizontal">
+            <mwc-button outlined @click=${this.uploadSplits}
+              >Upload to Splits.io</mwc-button
+            >
+            <a
+              href="${this.claimLink}"
+              target="_blank"
+              ?hidden=${this.claimMessageHidden}
+              ><mwc-button>Claim Splits.io Run</mwc-button></a
+            >
+          </div>
+          <div class="layout horizontal center">
             <mwc-textfield
               id="splitsio-id"
               class="splitsio-id"

@@ -7,7 +7,7 @@ import {
   query,
 } from 'lit-element';
 import { TextField } from '@material/mwc-textfield';
-import '@material/mwc-textfield';
+import './elements/mkw-textfield';
 import { TimeDurationInputEvent } from './data/types';
 
 @customElement('time-duration-input')
@@ -66,17 +66,26 @@ export class TimeDurationInput extends LitElement {
       );
     }
 
-    :host([focused]) {
+    /* :host([focused]) {
       outline: none;
-    }
+    } */
 
     /* :host([hidden]) {
       display: none !important;
     } */
 
+    .floated-label-placeholder {
+      margin-bottom: 4px;
+    }
+
     .separator-char {
-      padding: 1em 0 0 0;
+      padding-top: calc(2.5ex - 56px);
       /* font-size: 24px; */
+    }
+
+    .time-inputs {
+      font-size: 24px;
+      margin-bottom: 12px;
     }
 
     .minute {
@@ -103,20 +112,13 @@ export class TimeDurationInput extends LitElement {
       -webkit-flex-direction: row;
       flex-direction: row;
     }
-
-    .layout.center,
-    .layout.center-center {
-      -ms-flex-align: center;
-      -webkit-align-items: center;
-      align-items: center;
-    }
   `;
 
   render() {
     return html`
       <div class="floated-label-placeholder">${this.label}</div>
-      <div class="layout horizontal">
-        <mwc-textfield
+      <div class="layout horizontal time-inputs">
+        <mkw-textfield
           id="minute"
           class="minute"
           @keydown=${this.minuteKeydown}
@@ -132,9 +134,9 @@ export class TimeDurationInput extends LitElement {
           maxLength="1"
           .validityTransform=${this.minuteValidator}
           ?fullwidth=${true}
-        ></mwc-textfield>
+        ></mkw-textfield>
         <div class="separator-char">:</div>
-        <mwc-textfield
+        <mkw-textfield
           id="second"
           class="second"
           @keydown=${this.secondKeydown}
@@ -150,9 +152,9 @@ export class TimeDurationInput extends LitElement {
           maxLength="2"
           .validityTransform=${this.secondValidator}
           ?fullwidth=${true}
-        ></mwc-textfield>
+        ></mkw-textfield>
         <div class="separator-char">.</div>
-        <mwc-textfield
+        <mkw-textfield
           id="millisecond"
           class="millisecond"
           @keydown=${this.msKeydown}
@@ -168,7 +170,7 @@ export class TimeDurationInput extends LitElement {
           maxLength="3"
           .validityTransform=${this.msValidator}
           ?fullwidth=${true}
-        ></mwc-textfield>
+        ></mkw-textfield>
       </div>
     `;
   }
