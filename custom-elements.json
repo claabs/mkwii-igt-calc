@@ -2,48 +2,291 @@
   "version": "experimental",
   "tags": [
     {
-      "name": "my-element",
-      "description": "An example element.",
-      "attributes": [
-        {
-          "name": "name",
-          "description": "The name to say \"Hello\" to.",
-          "type": "string",
-          "default": "\"World\""
-        },
-        {
-          "name": "count",
-          "description": "The number of times the button has been clicked.",
-          "type": "number",
-          "default": "0"
-        }
-      ],
+      "name": "mkw-select",
+      "path": "./src\\elements\\mkw-select.ts",
       "properties": [
         {
-          "name": "name",
-          "attribute": "name",
-          "description": "The name to say \"Hello\" to.",
-          "type": "string",
-          "default": "\"World\""
+          "name": "disabled",
+          "type": "boolean"
         },
         {
-          "name": "count",
-          "attribute": "count",
-          "description": "The number of times the button has been clicked.",
-          "type": "number",
-          "default": "0"
+          "name": "outlined",
+          "type": "boolean"
+        },
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "type": "string"
+        },
+        {
+          "name": "helper",
+          "type": "string"
+        },
+        {
+          "name": "helperPersistent",
+          "type": "boolean"
+        },
+        {
+          "name": "validateOnInitialRender",
+          "type": "boolean"
+        },
+        {
+          "name": "validationMessage",
+          "type": "string"
+        },
+        {
+          "name": "required",
+          "type": "boolean"
+        },
+        {
+          "name": "naturalWidth",
+          "type": "boolean"
+        },
+        {
+          "name": "items",
+          "type": "ListItemBase[]"
+        },
+        {
+          "name": "selected",
+          "type": "ListItemBase | null"
+        },
+        {
+          "name": "index",
+          "type": "number"
+        },
+        {
+          "name": "validityTransform",
+          "type": "((value: string, nativeValidity: ValidityState) => Partial<ValidityState>) | null"
+        },
+        {
+          "name": "validity",
+          "type": "ValidityState"
+        },
+        {
+          "name": "ripple",
+          "description": "Implement ripple getter for Ripple integration with mwc-formfield",
+          "type": "RippleInterface | Promise<RippleInterface | null> | undefined"
+        },
+        {
+          "name": "charCounterFoundation",
+          "type": "MDCTextFieldCharacterCounterFoundation | undefined"
+        },
+        {
+          "name": "floatingLabelFoundation",
+          "type": "MDCFloatingLabelFoundation | undefined"
+        },
+        {
+          "name": "lineRippleFoundation",
+          "type": "MDCLineRippleFoundation | undefined"
         }
       ],
-      "slots": [
+      "events": [
         {
-          "name": "",
-          "description": "This element has a slot"
+          "name": "selected",
+          "description": "{SelectedDetail}"
+        },
+        {
+          "name": "action",
+          "description": "{ActionDetail}"
+        },
+        {
+          "name": "opened"
+        },
+        {
+          "name": "closed"
+        },
+        {
+          "name": "change"
+        },
+        {
+          "name": "invalid"
+        }
+      ]
+    },
+    {
+      "name": "mkw-textfield",
+      "path": "./src\\elements\\mkw-textfield.ts",
+      "properties": [
+        {
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "TextFieldType"
+        },
+        {
+          "name": "placeholder",
+          "type": "string"
+        },
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "type": "string"
+        },
+        {
+          "name": "iconTrailing",
+          "type": "string"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean"
+        },
+        {
+          "name": "required",
+          "type": "boolean"
+        },
+        {
+          "name": "maxLength",
+          "type": "number"
+        },
+        {
+          "name": "outlined",
+          "type": "boolean"
+        },
+        {
+          "name": "fullWidth",
+          "type": "boolean"
+        },
+        {
+          "name": "helper",
+          "type": "string"
+        },
+        {
+          "name": "validateOnInitialRender",
+          "type": "boolean"
+        },
+        {
+          "name": "validationMessage",
+          "type": "string"
+        },
+        {
+          "name": "autoValidate",
+          "type": "boolean"
+        },
+        {
+          "name": "pattern",
+          "type": "string"
+        },
+        {
+          "name": "min",
+          "type": "string | number"
+        },
+        {
+          "name": "max",
+          "type": "string | number"
+        },
+        {
+          "name": "step",
+          "type": "number | null"
+        },
+        {
+          "name": "helperPersistent",
+          "type": "boolean"
+        },
+        {
+          "name": "charCounter",
+          "type": "boolean"
+        },
+        {
+          "name": "endAligned",
+          "type": "boolean"
+        },
+        {
+          "name": "inputMode",
+          "type": "TextFieldInputMode"
+        },
+        {
+          "name": "readOnly",
+          "type": "boolean"
+        },
+        {
+          "name": "validity",
+          "type": "ValidityState"
+        },
+        {
+          "name": "willValidate",
+          "type": "boolean"
+        },
+        {
+          "name": "selectionStart",
+          "type": "number | null"
+        },
+        {
+          "name": "selectionEnd",
+          "type": "number | null"
+        },
+        {
+          "name": "validityTransform",
+          "type": "((value: string, nativeValidity: ValidityState) => Partial<ValidityState>) | null"
+        },
+        {
+          "name": "ripple",
+          "description": "Implement ripple getter for Ripple integration with mwc-formfield",
+          "type": "RippleInterface | Promise<RippleInterface | null> | undefined"
+        },
+        {
+          "name": "charCounterFoundation",
+          "type": "MDCTextFieldCharacterCounterFoundation | undefined"
+        },
+        {
+          "name": "floatingLabelFoundation",
+          "type": "MDCFloatingLabelFoundation | undefined"
+        },
+        {
+          "name": "lineRippleFoundation",
+          "type": "MDCLineRippleFoundation | undefined"
+        }
+      ]
+    },
+    {
+      "name": "time-duration-input",
+      "path": "./src\\time-duration-input.ts",
+      "properties": [
+        {
+          "name": "charCounterFoundation",
+          "type": "MDCTextFieldCharacterCounterFoundation | undefined"
+        },
+        {
+          "name": "floatingLabelFoundation",
+          "type": "MDCFloatingLabelFoundation | undefined"
+        },
+        {
+          "name": "lineRippleFoundation",
+          "type": "MDCLineRippleFoundation | undefined"
         }
       ],
-      "cssParts": [
+      "events": [
         {
-          "name": "button",
-          "description": "The button"
+          "name": "change"
+        }
+      ]
+    },
+    {
+      "name": "mkwii-igt-calc-app",
+      "path": "./src\\mkwii-igt-calc-app.ts",
+      "properties": [
+        {
+          "name": "charCounterFoundation",
+          "type": "MDCTextFieldCharacterCounterFoundation | undefined"
+        },
+        {
+          "name": "floatingLabelFoundation",
+          "type": "MDCFloatingLabelFoundation | undefined"
+        },
+        {
+          "name": "lineRippleFoundation",
+          "type": "MDCLineRippleFoundation | undefined"
         }
       ]
     }

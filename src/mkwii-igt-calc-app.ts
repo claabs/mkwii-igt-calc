@@ -20,6 +20,7 @@ import { SplitsIOService, Split } from './services/splitsio';
 
 import './time-duration-input';
 import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
+import { TimeDurationInput } from './time-duration-input';
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
@@ -52,6 +53,10 @@ class MkwiiIgtCalcApp extends LitElement {
       display: flex;
     }
 
+    .layout[hidden] {
+      display: none;
+    }
+
     .layout.horizontal {
       -ms-flex-direction: row;
       -webkit-flex-direction: row;
@@ -78,9 +83,9 @@ class MkwiiIgtCalcApp extends LitElement {
               id="trackCountSelect"
               @selected=${this.trackCountChanged}
             >
-              <mwc-list-item>32 Tracks</mwc-list-item>
-              <mwc-list-item>16 Tracks</mwc-list-item>
-              <mwc-list-item>Individual Cup</mwc-list-item>
+              <mwc-list-item selected value="0">32 Tracks</mwc-list-item>
+              <mwc-list-item value="1">16 Tracks</mwc-list-item>
+              <mwc-list-item value="2">Individual Cup</mwc-list-item>
             </mkw-select>
             <mkw-select
               label="${this.categoryLabelProp}"
@@ -88,7 +93,10 @@ class MkwiiIgtCalcApp extends LitElement {
               @selected=${this.categoryChanged}
             >
               ${this.categoryListProp.map(
-                (item) => html` <mwc-list-item>${item}</mwc-list-item> `
+                (item, index) =>
+                  html`
+                    <mwc-list-item value="${index}">${item}</mwc-list-item>
+                  `
               )}
             </mkw-select>
           </div>
@@ -110,10 +118,15 @@ class MkwiiIgtCalcApp extends LitElement {
               `
             )}
           </div>
-          <mwc-button @click=${this.calculateTime} raised>Calculate</mwc-button>
+          <mwc-button
+            ?disabled=${this.calculateDisabled}
+            @click=${this.calculateTime}
+            raised
+            >Calculate</mwc-button
+          >
           <h2>Total: ${this.total}</h2>
           <hr />
-          <div>
+          <div ?hidden=${this.calculateDisabled}>
             <mwc-button
               class="splitsio-input"
               outlined
@@ -177,6 +190,9 @@ class MkwiiIgtCalcApp extends LitElement {
   private claimLink = '';
 
   @property({ type: Boolean })
+  private calculateDisabled = true;
+
+  @property({ type: Boolean })
   private claimMessageHidden = true;
 
   @property({ type: String })
@@ -188,12 +204,27 @@ class MkwiiIgtCalcApp extends LitElement {
   @query('#splitsio-id')
   private splitsIOIdElem!: TextField | null;
 
+  private validateAll(): boolean {
+    const timeInputElements = this.courses.map((_course, index) => {
+      return this.shadowRoot!.querySelector(
+        `#course-${index}`
+      ) as TimeDurationInput;
+    });
+    let valid = true;
+    timeInputElements.forEach((timeElement) => {
+      const timeElementValid = timeElement.reportValidity();
+      valid = valid && timeElementValid;
+    });
+    return valid;
+  }
+
   private calculateTime(): boolean {
     let hours = 0;
     let minutes = 0;
     let seconds = 0;
     let milliseconds = 0;
     try {
+      this.validateAll();
       this.courses.forEach((course) => {
         if (!course.minutes || !course.seconds || !course.milliseconds) {
           throw new Error(`Missing time value on ${course.label}`);
@@ -342,7 +373,6 @@ class MkwiiIgtCalcApp extends LitElement {
     if (this.selectedTrackCount === 0) {
       // 32 Track
       const rotatedTrackOrder = rotate(tracks32, index);
-      // Let rotatedTrackOrder = tracks32.slice(0, 32 - newVal).concat(tracks32.slice(32 - newVal));
       this.courses = this.mapTracks(rotatedTrackOrder);
     } else if (this.selectedTrackCount === 1) {
       const trackOrder = tracks32.slice(index * 16, index * 16 + 16);
@@ -355,6 +385,7 @@ class MkwiiIgtCalcApp extends LitElement {
       this.courses = [];
     }
 
+    this.calculateDisabled = index < 0;
     this.claimMessageHidden = true;
     this.total = '';
     this.splitsioId = null;

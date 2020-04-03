@@ -189,6 +189,16 @@ export class TimeDurationInput extends LitElement {
     this.dispatchEvent(changeEvt);
   }
 
+  reportValidity(): boolean {
+    if (!this.minuteElem) throw new Error('Missing minuteElem');
+    if (!this.secondElem) throw new Error('Missing secondElem');
+    if (!this.millisecondElem) throw new Error('Missing millisecondElem');
+    const minuteValid = this.minuteElem.reportValidity();
+    const secondValid = this.secondElem.reportValidity();
+    const millisecondValid = this.millisecondElem.reportValidity();
+    return minuteValid && secondValid && millisecondValid;
+  }
+
   private minuteKeydown(e: KeyboardEvent) {
     if (e.target) {
       if (e.keyCode === 186 || e.keyCode === 110 || e.keyCode === 13) {
