@@ -3,29 +3,32 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-
-    <title>mkwii-igt-calc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Easily calculate in-game time for Mario Kart Wii speedruns.">
 
     <!-- See https://goo.gl/OOhYW5 -->
     <link rel="manifest" href="./manifest.json">
 
     <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
-    <!-- <script src="./node_modules/web-animations-js/web-animations-next-lite.min.js"></script> -->
-    <!-- <script src="./node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script> -->
 
-    <script type="module" src="./dist/mkwii-igt-calc-app.js"></script>
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        body {
             background-color: rgb(245, 245, 245);
         }
     </style>
+    <title>mkwii-igt-calc</title>
 </head>
 
 <body>
     <mkwii-igt-calc-app></mkwii-igt-calc-app>
+
+    <script type="module" src="./build/mkwii-igt-calc-app.js"></script>
 </body>
 
 </html>

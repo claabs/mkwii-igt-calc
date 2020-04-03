@@ -1,6 +1,8 @@
 /node_modules/
 /lib/
 /test/
+dist
+build
 
 # top level source
 *.js
