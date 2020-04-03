@@ -27,6 +27,8 @@ class MkwiiIgtCalcApp extends LitElement {
   static styles = css`
     :host {
       font-size: 14px;
+      background-color: rgb(245, 245, 245);
+      font-family: var(--mdc-typography-font-family, Roboto, sans-serif);
     }
 
     .content {
@@ -35,6 +37,7 @@ class MkwiiIgtCalcApp extends LitElement {
       max-width: 600px;
       padding: 0 10px;
       margin: 5px auto;
+      background-color: rgb(245, 245, 245);
     }
 
     .select-boxes {
