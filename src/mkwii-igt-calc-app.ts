@@ -32,7 +32,7 @@ class MkwiiIgtCalcApp extends LitElement {
       display: block;
       position: relative;
       max-width: 600px;
-      padding: 0 5px;
+      padding: 0 10px;
       margin: 5px auto;
     }
 
@@ -40,33 +40,12 @@ class MkwiiIgtCalcApp extends LitElement {
       margin-bottom: 16px;
     }
 
-    /* paper-card {
-      display: inline-block;
-      width: 100%;
-      color: black;
-      text-decoration: none;
+    .splitsio-input {
+      margin: 0 8px 8px 0;
     }
 
-    app-header {
-      background-color: var(--paper-blue-500);
-      color: #fff;
-    }
-
-    paper-icon-button {
-      --paper-icon-button-ink-color: black;
-    }
-
-    app-drawer-layout:not([narrow]) [drawer-toggle] {
-      display: none;
-    } */
-
-    /* paper-button {
-      background-color: var(--paper-blue-500);
-      color: var(--paper-grey-50);
-      font-weight: 600;
-    }  */
     .splitsio-id {
-      width: calc(4ch + 40px);
+      width: calc(76px + 32px);
     }
 
     .layout {
@@ -92,10 +71,6 @@ class MkwiiIgtCalcApp extends LitElement {
       <mwc-top-app-bar dense>
         <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
         <div slot="title">Mario Kart Wii IGT Calculator</div>
-
-        <!-- TODO: Splits.io button here? -->
-        <mwc-icon-button icon="favorite" slot="actionItems"></mwc-icon-button>
-
         <div class="content">
           <div class="select-boxes">
             <mkw-select
@@ -138,32 +113,39 @@ class MkwiiIgtCalcApp extends LitElement {
           <mwc-button @click=${this.calculateTime} raised>Calculate</mwc-button>
           <h2>Total: ${this.total}</h2>
           <hr />
-          <div class="layout horizontal">
-            <mwc-button outlined @click=${this.uploadSplits}
+          <div>
+            <mwc-button
+              class="splitsio-input"
+              outlined
+              @click=${this.uploadSplits}
               >Upload to Splits.io</mwc-button
             >
             <a
               href="${this.claimLink}"
               target="_blank"
               ?hidden=${this.claimMessageHidden}
-              ><mwc-button>Claim Splits.io Run</mwc-button></a
+              class="splitsio-input"
+              ><mwc-button outlined>Claim Splits.io Run</mwc-button></a
             >
-          </div>
-          <div class="layout horizontal center">
-            <mwc-textfield
-              id="splitsio-id"
-              class="splitsio-id"
-              readOnly
-              label="splits.io ID"
-              value="${this.splitsioId || ''}"
+            <div
+              class="layout horizontal center"
+              ?hidden=${this.claimMessageHidden}
             >
-            </mwc-textfield>
-            <mwc-icon-button
-              slot="suffix"
-              icon="file_copy"
-              @click="${this.copyClicked}"
-            >
-            </mwc-icon-button>
+              <mwc-textfield
+                id="splitsio-id"
+                class="splitsio-id splitsio-input"
+                readOnly
+                label="splits.io ID"
+                value="${this.splitsioId || ''}"
+              >
+              </mwc-textfield>
+              <mwc-icon-button
+                slot="suffix"
+                icon="file_copy"
+                @click="${this.copyClicked}"
+              >
+              </mwc-icon-button>
+            </div>
           </div>
         </div>
       </mwc-top-app-bar>
