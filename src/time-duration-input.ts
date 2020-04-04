@@ -66,14 +66,6 @@ export class TimeDurationInput extends LitElement {
       );
     }
 
-    /* :host([focused]) {
-      outline: none;
-    } */
-
-    /* :host([hidden]) {
-      display: none !important;
-    } */
-
     .floated-label-placeholder {
       margin-bottom: 4px;
     }

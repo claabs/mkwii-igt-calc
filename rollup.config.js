@@ -1,5 +1,5 @@
 import { createDefaultConfig } from '@open-wc/building-rollup';
-import cpy from 'rollup-plugin-cpy';
+import copy from 'rollup-plugin-copy';
 import filesize from 'rollup-plugin-filesize';
 
 const config = createDefaultConfig({
@@ -15,10 +15,11 @@ export default // add plugin to the first config
   },
   plugins: [
     ...config.plugins,
-    cpy({
-      // copy over all images files
-      files: ['favicon.ico', 'manifest.json'],
-      dest: 'dist',
+    copy({
+      targets: [
+        { src: 'manifest.json', dest: 'dist' },
+        { src: 'img/*', dest: 'dist/img' },
+      ],
     }),
     filesize(),
   ],

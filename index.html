@@ -5,11 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Easily calculate in-game time for Mario Kart Wii speedruns.">
+    <meta name="author" content="Charlie Laabs">
 
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="img/apple-192.png">
+    <meta name="theme-color" content="#6200ee" />
     <!-- See https://goo.gl/OOhYW5 -->
-    <link rel="manifest" href="./manifest.json">
-
-    <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
 
     <style>
         * {
@@ -22,13 +24,32 @@
             background-color: rgb(245, 245, 245);
         }
     </style>
-    <title>mkwii-igt-calc</title>
+    <title>MKWii IGT Calculator</title>
+    <link rel="preconnect" href="https://ajax.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 </head>
 
 <body>
     <mkwii-igt-calc-app></mkwii-igt-calc-app>
 
-    <script type="module" src="./build/mkwii-igt-calc-app.js"></script>
+    <script type="module" src="build/mkwii-igt-calc-app.js"></script>
+    <script>
+        WebFontConfig = {
+            google: {
+                families: ['Roboto', 'Material Icons&display=swap']
+            }
+        };
+
+        (function (d) {
+            var wf = d.createElement('script'), s = d.scripts[0];
+            wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js';
+            wf.async = true;
+            s.parentNode.insertBefore(wf, s);
+        })(document);
+    </script>
+    <noscript>Javascript is required to use this application</noscript>
 </body>
 
 </html>
