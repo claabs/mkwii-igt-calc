@@ -11,3 +11,4 @@ build
 *.d.ts.map
 
 !rollup.config.js
+!workbox-config.js
