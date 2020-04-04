@@ -1,35 +1,55 @@
 {
   "name": "mkwii-igt-calc",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
+  "main": "src/mkwii-igt-calc-app.ts",
+  "module": "build/mkwii-igt-calc-app.js",
+  "type": "module",
+  "scripts": {
+    "build:dist": "rimraf dist build && tsc && rollup -c rollup.config.js",
+    "build": "rimraf build && tsc",
+    "build:watch": "rimraf build && tsc --watch",
+    "lint": "lit-analyzer && eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
+    "serve": "es-dev-server --node-resolve --watch",
+    "serve:dist": "http-server dist -o",
+    "watch": "concurrently \"npm run build:watch\" \"npm run serve\""
+  },
+  "keywords": [
+    "web component",
+    "lit-element",
+    "typescript"
+  ],
+  "author": "The Polymer Authors",
+  "license": "MIT",
   "dependencies": {
-    "@polymer/app-layout": "^3.0.0",
-    "@polymer/iron-flex-layout": "^3.0.0",
-    "@polymer/iron-icons": "^3.0.0",
-    "@polymer/iron-validator-behavior": "^3.0.0",
-    "@polymer/paper-button": "^3.0.0",
-    "@polymer/paper-card": "^3.0.0",
-    "@polymer/paper-dropdown-menu": "^3.0.0",
-    "@polymer/paper-icon-button": "^3.0.0",
-    "@polymer/paper-input": "^3.0.0",
-    "@polymer/paper-item": "^3.0.0",
-    "@polymer/paper-listbox": "^3.0.0",
-    "@polymer/paper-styles": "^3.0.0",
-    "@polymer/polymer": "^3.1.0",
-    "@webcomponents/webcomponentsjs": "^2.2.0",
-    "web-animations-js": "^2.3.1"
+    "@material/mwc-button": "^0.14.1",
+    "@material/mwc-icon-button": "^0.14.1",
+    "@material/mwc-list": "^0.14.1",
+    "@material/mwc-select": "^0.14.1",
+    "@material/mwc-textfield": "^0.14.1",
+    "@material/mwc-top-app-bar": "^0.14.1",
+    "lit-element": "^2.3.1"
   },
   "devDependencies": {
-    "eslint": "^5.12.1",
-    "eslint-config-xo": "^0.26.0",
-    "eslint-plugin-html": "^5.0.0",
-    "gulp": "^4.0.0",
-    "gulp-gh-pages": "^0.5.4",
-    "web-component-tester": "^6.9.2"
-  },
-  "scripts": {
-    "start": "polymer serve",
-    "build": "polymer build --preset es6-bundled",
-    "deploy": "node_modules/.bin/gulp deploy"
+    "@open-wc/building-rollup": "^0.22.11",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "concurrently": "^5.1.0",
+    "es-dev-server": "^1.46.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-prettier": "^3.1.2",
+    "http-server": "^0.12.1",
+    "lit-analyzer": "^1.1.10",
+    "prettier": "^2.0.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^1.32.1",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-filesize": "^6.2.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "typescript": "^3.7.2"
   }
 }
