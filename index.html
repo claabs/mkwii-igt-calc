@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+  <!-- Register service worker if supported. -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Easily calculate in-game time for Mario Kart Wii speedruns.">
