@@ -4,7 +4,6 @@
   "description": "Easily calculate in-game time for Mario Kart Wii speedruns.",
   "main": "src/mkwii-igt-calc-app.ts",
   "module": "build/mkwii-igt-calc-app.js",
-  "type": "module",
   "scripts": {
     "build:dist": "rimraf dist build && tsc && rollup -c rollup.config.js",
     "build": "rimraf build && tsc",
