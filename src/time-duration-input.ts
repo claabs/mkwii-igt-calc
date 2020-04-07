@@ -176,9 +176,21 @@ export class TimeDurationInput extends LitElement {
         minutes: this.minutes,
         seconds: this.seconds,
         milliseconds: this.milliseconds,
+        valid: this.checkValidity(),
       },
     });
     this.dispatchEvent(changeEvt);
+  }
+
+  checkValidity(): boolean {
+    if (!this.minuteElem) throw new Error('Missing minuteElem');
+    if (!this.secondElem) throw new Error('Missing secondElem');
+    if (!this.millisecondElem) throw new Error('Missing millisecondElem');
+    return (
+      this.minuteElem.validity.valid &&
+      this.secondElem.validity.valid &&
+      this.millisecondElem.validity.valid
+    );
   }
 
   reportValidity(): boolean {

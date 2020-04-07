@@ -19,8 +19,10 @@ import { tracks32, TrackData } from './data/tracks32';
 import { SplitsIOService, Split } from './services/splitsio';
 
 import './time-duration-input';
+import './time-table-output';
 import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
 import { TimeDurationInput } from './time-duration-input';
+import { TimeTableOutput } from './time-table-output';
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
@@ -134,6 +136,7 @@ class MkwiiIgtCalcApp extends LitElement {
               class="splitsio-input"
               outlined
               @click=${this.uploadSplits}
+              title="Share the course times as splits you can attach to the run on speedrun.com"
               >Upload to Splits.io</mwc-button
             >
             <a
@@ -141,7 +144,11 @@ class MkwiiIgtCalcApp extends LitElement {
               target="_blank"
               ?hidden=${this.claimMessageHidden}
               class="splitsio-input"
-              ><mwc-button outlined>Claim Splits.io Run</mwc-button></a
+              ><mwc-button
+                outlined
+                title="Give the run ownership to your splits.io account"
+                >Claim Splits.io Run</mwc-button
+              ></a
             >
             <div
               class="layout horizontal center"
@@ -163,6 +170,12 @@ class MkwiiIgtCalcApp extends LitElement {
               </mwc-icon-button>
             </div>
           </div>
+          <time-table-output
+            id="table-output"
+            .courses=${this.courses}
+            .category=${this.selectedCategory}
+            .trackCount=${this.selectedTrackCount}
+          ></time-table-output>
         </div>
       </mwc-top-app-bar>
     `;
@@ -206,6 +219,9 @@ class MkwiiIgtCalcApp extends LitElement {
 
   @query('#splitsio-id')
   private splitsIOIdElem!: TextField | null;
+
+  @query('#table-output')
+  private tableOutputElem!: TimeTableOutput | null;
 
   private validateAll(): boolean {
     const timeInputElements = this.courses.map((_course, index) => {
@@ -375,7 +391,7 @@ class MkwiiIgtCalcApp extends LitElement {
     this.selectedCategory = index;
     if (this.selectedTrackCount === 0) {
       // 32 Track
-      const rotatedTrackOrder = rotate(tracks32, index);
+      const rotatedTrackOrder = rotateArray(tracks32, index);
       this.courses = this.mapTracks(rotatedTrackOrder);
     } else if (this.selectedTrackCount === 1) {
       const trackOrder = tracks32.slice(index * 16, index * 16 + 16);
@@ -400,7 +416,10 @@ class MkwiiIgtCalcApp extends LitElement {
       minutes: evt.detail.minutes,
       seconds: evt.detail.seconds,
       milliseconds: evt.detail.milliseconds,
+      valid: evt.detail.valid,
     };
+    if (!this.tableOutputElem) throw new Error('Missing tableOutputElem');
+    this.tableOutputElem.requestUpdate();
   }
 
   private mapTracks(modTrackList: TrackData[]): TimeDurationInputAttr[] {
@@ -424,7 +443,7 @@ class MkwiiIgtCalcApp extends LitElement {
   }
 }
 
-function rotate<K>(ary: K[], n: number): K[] {
+export function rotateArray<K>(ary: K[], n: number): K[] {
   const l = ary.length;
   const offset = (n + l) % l;
   return ary.slice(offset).concat(ary.slice(0, offset));
