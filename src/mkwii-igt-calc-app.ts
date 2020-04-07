@@ -23,6 +23,7 @@ import './time-table-output';
 import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
 import { TimeDurationInput } from './time-duration-input';
 import { TimeTableOutput } from './time-table-output';
+import { rotateArray } from './services/utils';
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
@@ -441,12 +442,6 @@ class MkwiiIgtCalcApp extends LitElement {
     // splitsElem.selectionEnd = splitsElem.selectionStart;
     this.splitsIOIdElem.blur();
   }
-}
-
-export function rotateArray<K>(ary: K[], n: number): K[] {
-  const l = ary.length;
-  const offset = (n + l) % l;
-  return ary.slice(offset).concat(ary.slice(0, offset));
 }
 
 declare global {

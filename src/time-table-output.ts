@@ -8,7 +8,7 @@ import {
   query,
 } from 'lit-element';
 import { TimeDurationInputAttr, TrackCountEnum } from './data/types';
-import { rotateArray } from './mkwii-igt-calc-app';
+import { rotateArray } from './services/utils';
 import { tracks32 } from './data/tracks32';
 import '@material/mwc-button';
 
