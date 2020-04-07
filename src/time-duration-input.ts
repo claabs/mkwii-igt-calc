@@ -6,8 +6,8 @@ import {
   css,
   query,
 } from 'lit-element';
-import { TextField } from '@material/mwc-textfield';
 import './elements/mkw-textfield';
+import { TextField } from './elements/mkw-textfield';
 import { TimeDurationInputEvent } from './data/types';
 
 @customElement('time-duration-input')
@@ -186,6 +186,9 @@ export class TimeDurationInput extends LitElement {
     if (!this.minuteElem) throw new Error('Missing minuteElem');
     if (!this.secondElem) throw new Error('Missing secondElem');
     if (!this.millisecondElem) throw new Error('Missing millisecondElem');
+    this.minuteElem.checkValidity();
+    this.secondElem.checkValidity();
+    this.millisecondElem.checkValidity();
     return (
       this.minuteElem.validity.valid &&
       this.secondElem.validity.valid &&
@@ -216,6 +219,7 @@ export class TimeDurationInput extends LitElement {
   private minuteInput(e: InputEvent) {
     if (e.target) {
       if (!this.minuteElem) throw new Error('Missing minuteElem');
+      this.minuteElem.setCustomValidity('');
       const val = this.minuteElem.value.replace(/[^0-9]/, '');
       this.minuteElem.value = val;
     }
@@ -252,6 +256,7 @@ export class TimeDurationInput extends LitElement {
   private secondInput(e: InputEvent) {
     if (e.target) {
       if (!this.secondElem) throw new Error('Missing secondElem');
+      this.secondElem.setCustomValidity('');
       const val = this.secondElem.value.replace(/[^0-9]/, '');
       this.secondElem.value = val;
     }
@@ -302,6 +307,7 @@ export class TimeDurationInput extends LitElement {
   private msInput(e: InputEvent) {
     if (e.target) {
       if (!this.millisecondElem) throw new Error('Missing msElem');
+      this.millisecondElem.setCustomValidity('');
       const val = this.millisecondElem.value.replace(/[^0-9]/, '');
       this.millisecondElem.value = val;
     }
