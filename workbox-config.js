@@ -8,7 +8,15 @@ module.exports = {
   modifyUrlPrefix: {
     '/': '',
   },
+  dontCacheBustURLsMatching: /[.-](\w{8}|\w{32})\./,
   runtimeCaching: [
+    // {
+    //   urlPattern: /\.(?:js|css)$/,
+    //   handler: 'StaleWhileRevalidate',
+    //   options: {
+    //     cacheName: 'static-resources',
+    //   },
+    // },
     {
       urlPattern: /^https:\/\/fonts\.googleapis\.com/,
       handler: 'StaleWhileRevalidate',
