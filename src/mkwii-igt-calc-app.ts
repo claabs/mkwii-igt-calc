@@ -268,7 +268,9 @@ class MkwiiIgtCalcApp extends LitElement {
       if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds)) {
         throw new Error('Invalid total time value');
       }
-      this.total = `${minutes}:${seconds
+      this.total = `${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds
         .toString()
         .padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
       if (hours > 0) {
