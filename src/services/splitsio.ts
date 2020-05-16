@@ -18,7 +18,7 @@ export interface ExchangeJSON {
     shortname: string;
     longname: string;
     version: string;
-    webstie: string;
+    website: string;
   };
   game: {
     longname: string;
@@ -85,7 +85,7 @@ export class SplitsIOService {
         shortname: 'mkwii-igt-calc',
         longname: 'Mario Kart Wii In-game Time Calculator',
         version: '2.0.0',
-        webstie: 'https://charlocharlie.github.io/mkwii-igt-calc/',
+        website: 'https://charlocharlie.github.io/mkwii-igt-calc/',
       },
       game: {
         longname: 'Mario Kart Wii',
