@@ -12,6 +12,10 @@ const myStyle = css`
   .mdc-text-field {
     height: 2.5ex;
   }
+  .mdc-text-field--invalid .mdc-text-field__input {
+    caret-color: #b00020;
+    background-color: #8f021c20;
+  }
 `;
 
 @customElement('mkw-textfield')
