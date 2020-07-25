@@ -1,9 +1,27 @@
+export enum TrackClass {
+  NITRO,
+  RETRO,
+}
+
+export enum TrackCup {
+  MUSHROOM,
+  FLOWER,
+  STAR,
+  SPECIAL,
+  SHELL,
+  BANANA,
+  LEAF,
+  LIGHTNING,
+}
+
 export interface TrackData {
   name: string;
   short: string;
   avgMinutes: number;
   avgSeconds: number;
   avgMilliseconds: number;
+  cup: TrackCup;
+  class: TrackClass;
 }
 
 export const tracks32: TrackData[] = [
@@ -13,6 +31,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 20,
     avgMilliseconds: 887,
+    class: TrackClass.NITRO,
+    cup: TrackCup.MUSHROOM,
   },
   {
     name: `Moo Moo Meadows`,
@@ -20,6 +40,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 29,
     avgMilliseconds: 926,
+    class: TrackClass.NITRO,
+    cup: TrackCup.MUSHROOM,
   },
   {
     name: `Mushroom Gorge`,
@@ -27,6 +49,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 56,
     avgMilliseconds: 931,
+    class: TrackClass.NITRO,
+    cup: TrackCup.MUSHROOM,
   },
   {
     name: `Toad's Factory`,
@@ -34,6 +58,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 8,
     avgMilliseconds: 491,
+    class: TrackClass.NITRO,
+    cup: TrackCup.MUSHROOM,
   },
   {
     name: `Mario Circuit`,
@@ -41,6 +67,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 35,
     avgMilliseconds: 223,
+    class: TrackClass.NITRO,
+    cup: TrackCup.FLOWER,
   },
   {
     name: `Coconut Mall`,
@@ -48,6 +76,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 2,
     avgMilliseconds: 305,
+    class: TrackClass.NITRO,
+    cup: TrackCup.FLOWER,
   },
   {
     name: `DK's Snowboard Cross`,
@@ -55,6 +85,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 12,
     avgMilliseconds: 965,
+    class: TrackClass.NITRO,
+    cup: TrackCup.FLOWER,
   },
   {
     name: `Wario's Gold Mine`,
@@ -62,6 +94,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 7,
     avgMilliseconds: 749,
+    class: TrackClass.NITRO,
+    cup: TrackCup.FLOWER,
   },
   {
     name: `Daisy Circuit`,
@@ -69,6 +103,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 41,
     avgMilliseconds: 804,
+    class: TrackClass.NITRO,
+    cup: TrackCup.STAR,
   },
   {
     name: `Koopa Cape`,
@@ -76,6 +112,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 38,
     avgMilliseconds: 197,
+    class: TrackClass.NITRO,
+    cup: TrackCup.STAR,
   },
   {
     name: `Maple Treeway`,
@@ -83,6 +121,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 36,
     avgMilliseconds: 557,
+    class: TrackClass.NITRO,
+    cup: TrackCup.STAR,
   },
   {
     name: `Grumble Volcano`,
@@ -90,6 +130,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 45,
     avgMilliseconds: 392,
+    class: TrackClass.NITRO,
+    cup: TrackCup.STAR,
   },
   {
     name: `Dry Dry Ruins`,
@@ -97,6 +139,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 13,
     avgMilliseconds: 857,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SPECIAL,
   },
   {
     name: `Moonview Highway`,
@@ -104,6 +148,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 59,
     avgMilliseconds: 914,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SPECIAL,
   },
   {
     name: `Bowser's Castle`,
@@ -111,6 +157,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 44,
     avgMilliseconds: 10,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SPECIAL,
   },
   {
     name: `Rainbow Road`,
@@ -118,6 +166,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 49,
     avgMilliseconds: 251,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SPECIAL,
   },
   {
     name: `GCN Peach Beach`,
@@ -125,6 +175,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 23,
     avgMilliseconds: 911,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SHELL,
   },
   {
     name: `DS Yoshi Falls`,
@@ -132,6 +184,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 8,
     avgMilliseconds: 338,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SHELL,
   },
   {
     name: `SNES Ghost Valley 2`,
@@ -139,6 +193,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 1,
     avgMilliseconds: 539,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SHELL,
   },
   {
     name: `N64 Mario Raceway`,
@@ -146,6 +202,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 57,
     avgMilliseconds: 346,
+    class: TrackClass.NITRO,
+    cup: TrackCup.SHELL,
   },
   {
     name: `N64 Sherbet Land`,
@@ -153,6 +211,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 26,
     avgMilliseconds: 136,
+    class: TrackClass.NITRO,
+    cup: TrackCup.BANANA,
   },
   {
     name: `GBA Shy Guy Beach`,
@@ -160,6 +220,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 37,
     avgMilliseconds: 933,
+    class: TrackClass.NITRO,
+    cup: TrackCup.BANANA,
   },
   {
     name: `DS Delfino Square`,
@@ -167,6 +229,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 24,
     avgMilliseconds: 306,
+    class: TrackClass.NITRO,
+    cup: TrackCup.BANANA,
   },
   {
     name: `GCN Waluigi Stadium`,
@@ -174,6 +238,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 17,
     avgMilliseconds: 716,
+    class: TrackClass.NITRO,
+    cup: TrackCup.BANANA,
   },
   {
     name: `DS Desert Hills`,
@@ -181,6 +247,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 51,
     avgMilliseconds: 520,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LEAF,
   },
   {
     name: `GBA Bowser Castle 3`,
@@ -188,6 +256,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 35,
     avgMilliseconds: 917,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LEAF,
   },
   {
     name: `N64 DK's Jungle Parkway`,
@@ -195,6 +265,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 34,
     avgMilliseconds: 544,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LEAF,
   },
   {
     name: `GCN Mario Circuit`,
@@ -202,6 +274,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 50,
     avgMilliseconds: 642,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LEAF,
   },
   {
     name: `SNES Mario Circuit 3`,
@@ -209,6 +283,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 28,
     avgMilliseconds: 934,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LIGHTNING,
   },
   {
     name: `DS Peach Gardens`,
@@ -216,6 +292,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 18,
     avgMilliseconds: 968,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LIGHTNING,
   },
   {
     name: `GCN DK Mountain`,
@@ -223,6 +301,8 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 26,
     avgMilliseconds: 636,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LIGHTNING,
   },
   {
     name: `N64 Bowser's Castle`,
@@ -230,5 +310,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 52,
     avgMilliseconds: 638,
+    class: TrackClass.NITRO,
+    cup: TrackCup.LIGHTNING,
   },
 ];

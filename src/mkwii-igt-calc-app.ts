@@ -11,12 +11,14 @@ import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-button';
 import '@material/mwc-icon-button';
 import '@material/mwc-textfield';
+import '@material/mwc-dialog';
 import './elements/mkw-select';
 import { TextField } from '@material/mwc-textfield';
+import { Dialog } from '@material/mwc-dialog';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
 import { Select } from '@material/mwc-select';
 import { tracks32, TrackData } from './data/tracks32';
-import { SplitsIOService, Split } from './services/splitsio';
+import { SplitsIOService, Split, getRun } from './services/splitsio';
 
 import './time-duration-input';
 import './time-table-output';
@@ -24,6 +26,26 @@ import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
 import { TimeDurationInput } from './time-duration-input';
 import { TimeTableOutput } from './time-table-output';
 import { rotateArray } from './services/utils';
+
+export interface ClockValues {
+  milliseconds: string;
+  seconds: string;
+  minutes: string;
+}
+
+export function millisToClockValues(inMs: number): ClockValues {
+  const minutes = Math.floor(inMs / 60000).toString();
+  const seconds = Math.floor((inMs % 60000) / 1000)
+    .toString()
+    .padStart(2, '0');
+  const milliseconds = (inMs % 1000).toString().padStart(3, '0');
+
+  return {
+    milliseconds,
+    seconds,
+    minutes,
+  };
+}
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
@@ -82,6 +104,30 @@ class MkwiiIgtCalcApp extends LitElement {
       <mwc-top-app-bar dense>
         <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
         <div slot="title">Mario Kart Wii IGT Calculator</div>
+        <mwc-icon-button
+          icon="import_export"
+          slot="actionItems"
+          @click=${this.openImportDialog}
+        ></mwc-icon-button>
+        <mwc-dialog heading="Import Run" id="import-dialog">
+          <div>
+            <mwc-textfield
+              id="import-splits-input"
+              label="splits.io URL"
+              dialogInitialFocus
+            ></mwc-textfield>
+          </div>
+          <mwc-button
+            dialogAction="import"
+            slot="primaryAction"
+            @click=${this.importSplits}
+          >
+            import
+          </mwc-button>
+          <mwc-button dialogAction="cancel" slot="secondaryAction">
+            cancel
+          </mwc-button>
+        </mwc-dialog>
         <div class="content">
           <div class="select-boxes">
             <mkw-select
@@ -215,6 +261,9 @@ class MkwiiIgtCalcApp extends LitElement {
   @property({ type: String })
   private splitsioId: string | null = '';
 
+  @query('#trackCountSelect')
+  private trackCountSelectElem!: Select | null;
+
   @query('#category-select')
   private categorySelectElem!: Select | null;
 
@@ -223,6 +272,12 @@ class MkwiiIgtCalcApp extends LitElement {
 
   @query('#table-output')
   private tableOutputElem!: TimeTableOutput | null;
+
+  @query('#import-dialog')
+  private importDialog!: Dialog | null;
+
+  @query('#import-splits-input')
+  private importSplitsInput!: TextField | null;
 
   private validateAll(): boolean {
     const timeInputElements = this.courses.map((_course, index) => {
@@ -443,6 +498,70 @@ class MkwiiIgtCalcApp extends LitElement {
     document.execCommand('copy');
     // splitsElem.selectionEnd = splitsElem.selectionStart;
     this.splitsIOIdElem.blur();
+  }
+
+  private openImportDialog(): void {
+    if (!this.importDialog) throw new Error('Missing importDialog');
+    this.importDialog.show();
+  }
+
+  private async importSplits(): Promise<void> {
+    if (!this.importSplitsInput) throw new Error('Missing importSplitsInput');
+    const inputValue = this.importSplitsInput.value;
+    let rawSplitId;
+    try {
+      const { pathname } = new URL(inputValue);
+      rawSplitId = pathname.replace('/', '');
+    } catch (err) {
+      rawSplitId = inputValue;
+    }
+    const splitId = rawSplitId.toLowerCase().replace(/[^a-z\d]/g, ''); // Filter out all non-base36 characters
+    const run = await getRun(splitId);
+
+    if (run.default_timing !== 'game')
+      throw new Error('Cannot parse splits without game time');
+
+    if (run.game?.name !== 'Mario Kart Wii')
+      throw new Error('Splits must be from MKW');
+    const segmentCount = run.segments.length;
+
+    const firstTrack = run.segments[0].name;
+    if (!firstTrack) throw new Error('Could not get first track from splits');
+    const startTrackIndex = tracks32.findIndex(
+      (track) => track.name === firstTrack
+    );
+    if (startTrackIndex === -1) throw new Error('Could not match start track');
+
+    if (!this.trackCountSelectElem)
+      throw new Error('Could not find track count select element');
+
+    if (!this.categorySelectElem)
+      throw new Error('Could not find category select element');
+
+    if (segmentCount === 32) {
+      this.trackCountSelectElem.select(0);
+      await this.trackCountSelectElem.layout(true);
+      this.categorySelectElem.select(startTrackIndex);
+    } else if (segmentCount === 16) {
+      this.trackCountSelectElem.select(1);
+      await this.trackCountSelectElem.layout(true);
+      this.categorySelectElem.select(tracks32[startTrackIndex].class);
+    } else if (segmentCount === 4) {
+      this.trackCountSelectElem.select(2);
+      await this.trackCountSelectElem.layout(true);
+      this.categorySelectElem.select(tracks32[startTrackIndex].cup);
+    } else {
+      throw new Error('Invalid segment count');
+    }
+
+    this.courses = run.segments.map(
+      (segment, index): TimeDurationInputAttr => {
+        return {
+          ...this.courses[index],
+          ...millisToClockValues(segment.gametime_duration_ms),
+        };
+      }
+    );
   }
 }
 
