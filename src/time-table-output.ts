@@ -34,6 +34,8 @@ export class TimeTableOutput extends LitElement {
       position: absolute;
       left: -1000px;
       top: -1000px;
+      table-layout: fixed;
+      width: 100%;
     }
   `;
 

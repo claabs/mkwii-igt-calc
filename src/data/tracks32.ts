@@ -1,3 +1,5 @@
+import { TrackCountEnum } from './types';
+
 export enum TrackClass {
   NITRO,
   RETRO,
@@ -175,7 +177,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 23,
     avgMilliseconds: 911,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.SHELL,
   },
   {
@@ -184,7 +186,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 8,
     avgMilliseconds: 338,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.SHELL,
   },
   {
@@ -193,7 +195,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 1,
     avgMilliseconds: 539,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.SHELL,
   },
   {
@@ -202,7 +204,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 57,
     avgMilliseconds: 346,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.SHELL,
   },
   {
@@ -211,7 +213,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 26,
     avgMilliseconds: 136,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.BANANA,
   },
   {
@@ -220,7 +222,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 37,
     avgMilliseconds: 933,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.BANANA,
   },
   {
@@ -229,7 +231,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 24,
     avgMilliseconds: 306,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.BANANA,
   },
   {
@@ -238,7 +240,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 17,
     avgMilliseconds: 716,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.BANANA,
   },
   {
@@ -247,7 +249,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 51,
     avgMilliseconds: 520,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LEAF,
   },
   {
@@ -256,7 +258,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 35,
     avgMilliseconds: 917,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LEAF,
   },
   {
@@ -265,7 +267,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 34,
     avgMilliseconds: 544,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LEAF,
   },
   {
@@ -274,7 +276,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 50,
     avgMilliseconds: 642,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LEAF,
   },
   {
@@ -283,7 +285,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 1,
     avgSeconds: 28,
     avgMilliseconds: 934,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LIGHTNING,
   },
   {
@@ -292,7 +294,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 18,
     avgMilliseconds: 968,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LIGHTNING,
   },
   {
@@ -301,7 +303,7 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 26,
     avgMilliseconds: 636,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LIGHTNING,
   },
   {
@@ -310,7 +312,27 @@ export const tracks32: TrackData[] = [
     avgMinutes: 2,
     avgSeconds: 52,
     avgMilliseconds: 638,
-    class: TrackClass.NITRO,
+    class: TrackClass.RETRO,
     cup: TrackCup.LIGHTNING,
   },
 ];
+
+export function getSubSegments(trackNames: string[]): Set<TrackCountEnum> {
+  const validSegments = new Set<TrackCountEnum>();
+  const trackDataMap = trackNames.map((name) =>
+    tracks32.find((elem) => elem.name === name)
+  );
+  if (
+    trackDataMap[0]?.cup === trackDataMap[3]?.cup &&
+    trackDataMap.length > 4
+  ) {
+    validSegments.add(TrackCountEnum.INDIVIDUAL_CUP);
+  }
+  if (
+    trackDataMap[0]?.class === trackDataMap[15]?.class &&
+    trackDataMap.length > 16
+  ) {
+    validSegments.add(TrackCountEnum.TRACKS_16);
+  }
+  return validSegments;
+}

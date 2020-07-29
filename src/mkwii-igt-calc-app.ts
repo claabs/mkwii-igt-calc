@@ -17,12 +17,16 @@ import { TextField } from '@material/mwc-textfield';
 import { Dialog } from '@material/mwc-dialog';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
 import { Select } from '@material/mwc-select';
-import { tracks32, TrackData } from './data/tracks32';
+import { tracks32, TrackData, getSubSegments } from './data/tracks32';
 import { SplitsIOService, Split, getRun } from './services/splitsio';
 
 import './time-duration-input';
 import './time-table-output';
-import { TimeDurationInputAttr, TimeDurationInputEvent } from './data/types';
+import {
+  TimeDurationInputAttr,
+  TimeDurationInputEvent,
+  TrackCountEnum,
+} from './data/types';
 import { TimeDurationInput } from './time-duration-input';
 import { TimeTableOutput } from './time-table-output';
 import { rotateArray } from './services/utils';
@@ -31,10 +35,12 @@ export interface ClockValues {
   milliseconds: string;
   seconds: string;
   minutes: string;
+  hours: string;
 }
 
 export function millisToClockValues(inMs: number): ClockValues {
-  const minutes = Math.floor(inMs / 60000).toString();
+  const hours = Math.floor(inMs / 3600000).toString();
+  const minutes = Math.floor((inMs % 3600000) / 60000).toString();
   const seconds = Math.floor((inMs % 60000) / 1000)
     .toString()
     .padStart(2, '0');
@@ -44,7 +50,16 @@ export function millisToClockValues(inMs: number): ClockValues {
     milliseconds,
     seconds,
     minutes,
+    hours,
   };
+}
+
+export function assembleTimeString(clockValues: ClockValues): string {
+  const minuteTime = `${clockValues.minutes}:${clockValues.seconds}.${clockValues.milliseconds}`;
+  if (clockValues.hours !== '0') {
+    return `${clockValues.hours}:${minuteTime}`;
+  }
+  return minuteTime;
 }
 
 @customElement('mkwii-igt-calc-app')
@@ -177,6 +192,12 @@ class MkwiiIgtCalcApp extends LitElement {
             >Calculate</mwc-button
           >
           <h2>Total: ${this.total}</h2>
+          <h2 ?hidden=${!this.first16Total}>
+            First 16 Tracks: ${this.first16Total}
+          </h2>
+          <h2 ?hidden=${!this.first4Total}>
+            First 4 Tracks: ${this.first4Total}
+          </h2>
           <hr />
           <div ?hidden=${this.calculateDisabled}>
             <mwc-button
@@ -230,6 +251,12 @@ class MkwiiIgtCalcApp extends LitElement {
 
   @property({ type: String })
   private total = '';
+
+  @property({ type: String })
+  private first16Total = '';
+
+  @property({ type: String })
+  private first4Total = '';
 
   @property({ type: Number })
   private selectedTrackCount = 0;
@@ -294,42 +321,37 @@ class MkwiiIgtCalcApp extends LitElement {
   }
 
   private calculateTime(): boolean {
-    let hours = 0;
-    let minutes = 0;
-    let seconds = 0;
-    let milliseconds = 0;
     try {
       this.validateAll();
-      this.courses.forEach((course) => {
+      const validSubSegments = getSubSegments(this.courses.map((c) => c.label));
+      const trackTimes = this.courses.map((course) => {
         if (!course.minutes || !course.seconds || !course.milliseconds) {
           throw new Error(`Missing time value on ${course.label}`);
         }
         const minInt = parseInt(course.minutes, 10);
         const secInt = parseInt(course.seconds, 10);
         const milliInt = parseInt(course.milliseconds, 10);
-        minutes += minInt;
-        seconds += secInt;
-        milliseconds += milliInt;
         if (this.timesInvalid(minInt, secInt, milliInt)) {
           throw new Error(`Time value out of range on ${course.label}`);
         }
+        let trackMilliseconds = 0;
+        trackMilliseconds += minInt * 60 * 1000;
+        trackMilliseconds += secInt * 1000;
+        trackMilliseconds += milliInt;
+
+        return trackMilliseconds;
       });
-      seconds += Math.floor(milliseconds / 1000);
-      milliseconds %= 1000;
-      minutes += Math.floor(seconds / 60);
-      seconds %= 60;
-      hours += Math.floor(minutes / 60);
-      minutes %= 60;
-      if (isNaN(minutes) || isNaN(seconds) || isNaN(milliseconds)) {
-        throw new Error('Invalid total time value');
+      const totalMs = trackTimes.reduce((a, b) => a + b, 0);
+      const clockValues = millisToClockValues(totalMs);
+      this.total = assembleTimeString(clockValues);
+
+      if (validSubSegments.has(TrackCountEnum.INDIVIDUAL_CUP)) {
+        const firstMs = trackTimes.slice(0, 4).reduce((a, b) => a + b, 0);
+        this.first4Total = assembleTimeString(millisToClockValues(firstMs));
       }
-      this.total = `${minutes
-        .toString()
-        .padStart(2, '0')}:${seconds
-        .toString()
-        .padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
-      if (hours > 0) {
-        this.total = `${hours}:${this.total}`;
+      if (validSubSegments.has(TrackCountEnum.TRACKS_16)) {
+        const firstMs = trackTimes.slice(0, 16).reduce((a, b) => a + b, 0);
+        this.first16Total = assembleTimeString(millisToClockValues(firstMs));
       }
       return true;
     } catch (err) {
@@ -465,6 +487,8 @@ class MkwiiIgtCalcApp extends LitElement {
     this.calculateDisabled = index < 0;
     this.claimMessageHidden = true;
     this.total = '';
+    this.first4Total = '';
+    this.first16Total = '';
     this.splitsioId = null;
   }
 
