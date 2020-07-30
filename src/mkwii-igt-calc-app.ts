@@ -12,7 +12,11 @@ import '@material/mwc-button';
 import '@material/mwc-icon-button';
 import '@material/mwc-textfield';
 import '@material/mwc-dialog';
+import '@material/mwc-snackbar';
+import { Workbox, messageSW } from 'workbox-window';
+import { WorkboxLifecycleEvent } from 'workbox-window/utils/WorkboxEvent';
 import './elements/mkw-select';
+import { Snackbar } from '@material/mwc-snackbar';
 import { TextField } from '@material/mwc-textfield';
 import { Dialog } from '@material/mwc-dialog';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
@@ -64,6 +68,27 @@ export function assembleTimeString(clockValues: ClockValues): string {
 
 @customElement('mkwii-igt-calc-app')
 class MkwiiIgtCalcApp extends LitElement {
+  constructor() {
+    super();
+    if ('serviceWorker' in navigator) {
+      this.workbox = new Workbox('./sw.js');
+      this.workbox.addEventListener(
+        'waiting',
+        this.createReloadPrompt.bind(this)
+      );
+      this.workbox.addEventListener(
+        'externalwaiting',
+        this.createReloadPrompt.bind(this)
+      );
+
+      this.initRegistration();
+    }
+  }
+
+  private async initRegistration(): Promise<void> {
+    this.registration = await this.workbox?.register();
+  }
+
   static styles = css`
     :host {
       font-size: 14px;
@@ -124,6 +149,15 @@ class MkwiiIgtCalcApp extends LitElement {
           slot="actionItems"
           @click=${this.openImportDialog}
         ></mwc-icon-button>
+        <mwc-snackbar
+          id="reload-page-snackbar"
+          labelText="New version available! OK to reload?"
+        >
+          <mwc-button slot="action" @click=${this.updateServiceWorker}
+            >RELOAD</mwc-button
+          >
+          <mwc-icon-button icon="close" slot="dismiss"></mwc-icon-button>
+        </mwc-snackbar>
         <mwc-dialog heading="Import Run" id="import-dialog">
           <div>
             <mwc-textfield
@@ -305,6 +339,13 @@ class MkwiiIgtCalcApp extends LitElement {
 
   @query('#import-splits-input')
   private importSplitsInput!: TextField | null;
+
+  @query('#reload-page-snackbar')
+  private reloadPageSnackbar!: Snackbar | null;
+
+  private workbox?: Workbox;
+
+  private registration?: ServiceWorkerRegistration;
 
   private validateAll(): boolean {
     const timeInputElements = this.courses.map((_course, index) => {
@@ -586,6 +627,29 @@ class MkwiiIgtCalcApp extends LitElement {
         };
       }
     );
+  }
+
+  private createReloadPrompt(): void {
+    if (!this.reloadPageSnackbar)
+      throw new Error('Missing reload page snackbar');
+    this.reloadPageSnackbar.open();
+  }
+
+  private async updateServiceWorker(): Promise<void> {
+    console.log('Refreshing service worker');
+    // reload the page as soon as the previously waiting service worker has taken control.
+    if (this.workbox) {
+      this.workbox.addEventListener(
+        'controlling',
+        (_event: WorkboxLifecycleEvent) => {
+          window.location.reload();
+        }
+      );
+
+      if (this.registration && this.registration.waiting) {
+        messageSW(this.registration.waiting, { type: 'SKIP_WAITING' });
+      }
+    }
   }
 }
 
