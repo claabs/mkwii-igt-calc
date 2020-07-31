@@ -59,7 +59,9 @@ export function millisToClockValues(inMs: number): ClockValues {
 }
 
 export function assembleTimeString(clockValues: ClockValues): string {
-  const minuteTime = `${clockValues.minutes}:${clockValues.seconds}.${clockValues.milliseconds}`;
+  const minuteTime = `${clockValues.minutes.padStart(2, '0')}:${
+    clockValues.seconds
+  }.${clockValues.milliseconds}`;
   if (clockValues.hours !== '0') {
     return `${clockValues.hours}:${minuteTime}`;
   }
