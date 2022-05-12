@@ -1,5 +1,6 @@
 import html from '@web/rollup-plugin-html';
 import resolve from '@rollup/plugin-node-resolve';
+import { copy } from '@web/rollup-plugin-copy';
 import { terser } from 'rollup-plugin-terser';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import { generateSW } from 'rollup-plugin-workbox';
@@ -31,6 +32,9 @@ export default {
       warnings: true,
     }),
     generateSW(workboxConfig),
+    copy({
+      patterns: ['assets/icon-*'],
+    }),
     // Print bundle summary
     summary(),
   ],
