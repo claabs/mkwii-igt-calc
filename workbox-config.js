@@ -1,11 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require('path');
+import path from 'path';
 
-module.exports = {
+export default {
   swDest: path.join(__dirname, 'dist', 'sw.js'),
   globDirectory: path.join(__dirname, 'dist'),
   globPatterns: ['**/*.{js,png,ico,svg,html,json,css}'],
-  modifyUrlPrefix: {
+  sourcemap: false,
+  modifyURLPrefix: {
     '/': '',
   },
   dontCacheBustURLsMatching: /[.-](\w{8}|\w{32})\./,

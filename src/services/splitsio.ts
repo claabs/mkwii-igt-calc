@@ -12,6 +12,13 @@ export interface SplitWithEndTimes extends Split {
   endedAt: number;
 }
 
+export interface Segment {
+  name: string;
+  endedAt: {
+    gametimeMS: number;
+  };
+}
+
 export interface ExchangeJSON {
   _schemaVersion: string;
   timer: {
@@ -30,13 +37,6 @@ export interface ExchangeJSON {
   segments: Segment[];
 }
 
-export interface Segment {
-  name: string;
-  endedAt: {
-    gametimeMS: number;
-  };
-}
-
 export interface SplitUploadResponse {
   claimUri: string;
   id: string;
@@ -51,31 +51,6 @@ export interface Runner {
   twitch_id: string;
   twitch_name: string;
   updated_at: string;
-}
-
-export interface RunResponse {
-  run: Run;
-}
-
-export interface Run {
-  attempts: number | null;
-  category: Category | null;
-  created_at: string;
-  default_timing: string;
-  game: Category | null;
-  gametime_duration_ms: number;
-  gametime_sum_of_best_ms: number;
-  id: string;
-  image_url: string | null;
-  parsed_at: string | null;
-  program: string;
-  realtime_duration_ms: number;
-  realtime_sum_of_best_ms: string | null;
-  runners: Runner[];
-  segments: RunSegment[];
-  srdc_id: string | null;
-  updated_at: string;
-  video_url: string | null;
 }
 
 export interface Category {
@@ -106,6 +81,31 @@ export interface RunSegment {
   realtime_skipped: boolean;
   realtime_start_ms: number;
   segment_number: number;
+}
+
+export interface Run {
+  attempts: number | null;
+  category: Category | null;
+  created_at: string;
+  default_timing: string;
+  game: Category | null;
+  gametime_duration_ms: number;
+  gametime_sum_of_best_ms: number;
+  id: string;
+  image_url: string | null;
+  parsed_at: string | null;
+  program: string;
+  realtime_duration_ms: number;
+  realtime_sum_of_best_ms: string | null;
+  runners: Runner[];
+  segments: RunSegment[];
+  srdc_id: string | null;
+  updated_at: string;
+  video_url: string | null;
+}
+
+export interface RunResponse {
+  run: Run;
 }
 
 /**

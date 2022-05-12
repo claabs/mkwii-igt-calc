@@ -1,12 +1,5 @@
-import {
-  LitElement,
-  html,
-  customElement,
-  property,
-  css,
-  TemplateResult,
-  query,
-} from 'lit-element';
+import { LitElement, html, css, TemplateResult } from 'lit';
+import { property, customElement, query } from 'lit/decorators.js';
 import { TimeDurationInputAttr, TrackCountEnum } from './data/types';
 import { rotateArray } from './services/utils';
 import { tracks32 } from './data/tracks32';
@@ -15,13 +8,13 @@ import '@material/mwc-button';
 @customElement('time-table-output')
 export class TimeTableOutput extends LitElement {
   @property({ type: Array })
-  private courses: TimeDurationInputAttr[] = [];
+  public courses: TimeDurationInputAttr[] = [];
 
   @property({ type: Number })
-  private trackCount = -1;
+  public trackCount = -1;
 
   @property({ type: Number })
-  private category = -1;
+  public category = -1;
 
   @query('#data-row')
   private dataRowElem!: HTMLTableRowElement | null;
@@ -29,7 +22,7 @@ export class TimeTableOutput extends LitElement {
   @query('#copy-input')
   private copyInputElem!: HTMLInputElement | null;
 
-  static styles = css`
+  static override styles = css`
     .copy-table {
       position: absolute;
       left: -1000px;
@@ -39,7 +32,7 @@ export class TimeTableOutput extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     return html`
       <mwc-button
         label="Copy Table Data"

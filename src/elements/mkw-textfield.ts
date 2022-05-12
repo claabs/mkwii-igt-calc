@@ -1,6 +1,7 @@
 import { TextFieldBase } from '@material/mwc-textfield/mwc-textfield-base';
-import { style } from '@material/mwc-textfield/mwc-textfield-css';
-import { customElement, css } from 'lit-element';
+import { styles } from '@material/mwc-textfield/mwc-textfield.css';
+import { css } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 const myStyle = css`
   .mdc-text-field__input {
@@ -11,6 +12,7 @@ const myStyle = css`
   }
   .mdc-text-field {
     height: 2.5ex;
+    padding: 0;
   }
   .mdc-text-field--invalid .mdc-text-field__input {
     caret-color: #b00020;
@@ -20,7 +22,7 @@ const myStyle = css`
 
 @customElement('mkw-textfield')
 export class TextField extends TextFieldBase {
-  static styles = [style, myStyle];
+  static override styles = [styles, myStyle];
 }
 
 declare global {

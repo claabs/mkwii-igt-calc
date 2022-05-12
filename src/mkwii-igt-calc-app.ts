@@ -1,11 +1,5 @@
-import {
-  LitElement,
-  html,
-  customElement,
-  property,
-  css,
-  query,
-} from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import { property, customElement, query } from 'lit/decorators.js';
 import '@material/mwc-top-app-bar';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-button';
@@ -79,7 +73,7 @@ class MkwiiIgtCalcApp extends LitElement {
         this.createReloadPrompt.bind(this)
       );
       this.workbox.addEventListener(
-        'externalwaiting',
+        'waiting',
         this.createReloadPrompt.bind(this)
       );
 
@@ -91,7 +85,7 @@ class MkwiiIgtCalcApp extends LitElement {
     this.registration = await this.workbox?.register();
   }
 
-  static styles = css`
+  static override styles = css`
     :host {
       font-size: 14px;
       background-color: rgb(245, 245, 245);
@@ -141,7 +135,7 @@ class MkwiiIgtCalcApp extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     return html`
       <mwc-top-app-bar dense>
         <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
@@ -286,43 +280,43 @@ class MkwiiIgtCalcApp extends LitElement {
   }
 
   @property({ type: String })
-  private total = '';
+  public total = '';
 
   @property({ type: String })
-  private first16Total = '';
+  public first16Total = '';
 
   @property({ type: String })
-  private first4Total = '';
+  public first4Total = '';
 
   @property({ type: Number })
-  private selectedTrackCount = 0;
+  public selectedTrackCount = 0;
 
   @property({ type: Number })
-  private selectedCategory = 0;
+  public selectedCategory = 0;
 
   @property({ type: Array })
-  private categoryListProp: string[] = [];
+  public categoryListProp: string[] = [];
 
   @property({ type: String })
-  private categoryLabelProp = '';
+  public categoryLabelProp = '';
 
   @property({ type: Array })
-  private courses: TimeDurationInputAttr[] = [];
+  public courses: TimeDurationInputAttr[] = [];
 
   // @property({ type: String })
-  // private attrSelected = '';
+  // public attrSelected = '';
 
   @property({ type: String })
-  private claimLink = '';
+  public claimLink = '';
 
   @property({ type: Boolean })
-  private calculateDisabled = true;
+  public calculateDisabled = true;
 
   @property({ type: Boolean })
-  private claimMessageHidden = true;
+  public claimMessageHidden = true;
 
   @property({ type: String })
-  private splitsioId: string | null = '';
+  public splitsioId: string | null = '';
 
   @query('#trackCountSelect')
   private trackCountSelectElem!: Select | null;
@@ -621,20 +615,18 @@ class MkwiiIgtCalcApp extends LitElement {
       throw new Error('Invalid segment count');
     }
 
-    this.courses = run.segments.map(
-      (segment, index): TimeDurationInputAttr => {
-        return {
-          ...this.courses[index],
-          ...millisToClockValues(segment.gametime_duration_ms),
-        };
-      }
-    );
+    this.courses = run.segments.map((segment, index): TimeDurationInputAttr => {
+      return {
+        ...this.courses[index],
+        ...millisToClockValues(segment.gametime_duration_ms),
+      };
+    });
   }
 
   private createReloadPrompt(): void {
     if (!this.reloadPageSnackbar)
       throw new Error('Missing reload page snackbar');
-    this.reloadPageSnackbar.open();
+    this.reloadPageSnackbar.show();
   }
 
   private async updateServiceWorker(): Promise<void> {

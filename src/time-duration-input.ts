@@ -1,28 +1,41 @@
-import {
-  LitElement,
-  html,
-  customElement,
-  property,
-  css,
-  query,
-} from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import { property, customElement, query } from 'lit/decorators.js';
 import './elements/mkw-textfield';
 import { TextField } from './elements/mkw-textfield';
 import { TimeDurationInputEvent } from './data/types';
 
+function validateTime(
+  value: string,
+  nativeValidity: ValidityState,
+  min: number,
+  max: number
+): Partial<ValidityState> {
+  if (!nativeValidity.valid) return nativeValidity;
+  const valueNumber = Number(value);
+  const isNotInteger = !Number.isInteger(valueNumber);
+  const tooSmall = valueNumber < min;
+  const tooLarge = valueNumber > max;
+  return {
+    valid: !(isNotInteger || tooLarge || tooSmall),
+    typeMismatch: isNotInteger,
+    rangeOverflow: tooLarge,
+    rangeUnderflow: tooSmall,
+  };
+}
+
 @customElement('time-duration-input')
 export class TimeDurationInput extends LitElement {
   @property({ type: String, reflect: true })
-  private minutes = '';
+  public minutes = '';
 
   @property({ type: String, reflect: true })
-  private seconds = '';
+  public seconds = '';
 
   @property({ type: String, reflect: true })
-  private milliseconds = '';
+  public milliseconds = '';
 
   @property({ type: String, attribute: true })
-  private plcMinutes = '';
+  public plcMinutes = '';
 
   @property({
     type: String,
@@ -31,7 +44,7 @@ export class TimeDurationInput extends LitElement {
       fromAttribute: (value: string): string => value.padStart(2, '0'),
     },
   })
-  private plcSeconds = '';
+  public plcSeconds = '';
 
   @property({
     type: String,
@@ -40,13 +53,13 @@ export class TimeDurationInput extends LitElement {
       fromAttribute: (value: string): string => value.padEnd(3, '0'),
     },
   })
-  private plcMilliseconds = '';
+  public plcMilliseconds = '';
 
   @property({ type: String, attribute: true })
-  private label = '';
+  public label = '';
 
   @property({ type: Number, attribute: true })
-  private index = 0;
+  public index = 0;
 
   @query('#minute')
   private minuteElem!: TextField | null;
@@ -57,7 +70,7 @@ export class TimeDurationInput extends LitElement {
   @query('#millisecond')
   private millisecondElem!: TextField | null;
 
-  static styles = css`
+  static override styles = css`
     :host {
       display: block;
       font-family: var(
@@ -106,7 +119,7 @@ export class TimeDurationInput extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     return html`
       <div class="floated-label-placeholder">${this.label}</div>
       <div class="layout horizontal time-inputs">
@@ -288,9 +301,9 @@ export class TimeDurationInput extends LitElement {
     if (e.target) {
       if (e.keyCode === 13) {
         // Enter
-        const neighbor = (this.getRootNode() as TimeDurationInput).querySelector(
-          `#course-${this.index + 1}`
-        );
+        const neighbor = (
+          this.getRootNode() as TimeDurationInput
+        ).querySelector(`#course-${this.index + 1}`);
         if (neighbor) {
           const { shadowRoot } = neighbor;
           if (!shadowRoot) throw new Error('Missing shadow root');
@@ -339,23 +352,4 @@ declare global {
   interface HTMLElementTagNameMap {
     'time-duration-input': TimeDurationInput;
   }
-}
-
-function validateTime(
-  value: string,
-  nativeValidity: ValidityState,
-  min: number,
-  max: number
-): Partial<ValidityState> {
-  if (!nativeValidity.valid) return nativeValidity;
-  const valueNumber = Number(value);
-  const isNotInteger = !Number.isInteger(valueNumber);
-  const tooSmall = valueNumber < min;
-  const tooLarge = valueNumber > max;
-  return {
-    valid: !(isNotInteger || tooLarge || tooSmall),
-    typeMismatch: isNotInteger,
-    rangeOverflow: tooLarge,
-    rangeUnderflow: tooSmall,
-  };
 }

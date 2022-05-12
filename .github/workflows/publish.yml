@@ -5,34 +5,29 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node_version: ['12']
 
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-      
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run build:dist
+      - uses: actions/checkout@v2
 
-    - name: Deploy
-      if: success()
-      uses: crazy-max/ghaction-github-pages@v1
-      with:
-        target_branch: gh-pages
-        build_dir: dist
-      env:
-        GITHUB_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build:dist
+
+      - name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: dist
+        env:
+          GH_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

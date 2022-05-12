@@ -1,26 +1,42 @@
-import { createDefaultConfig } from '@open-wc/building-rollup';
-import copy from 'rollup-plugin-copy';
-import filesize from 'rollup-plugin-filesize';
+import html from '@web/rollup-plugin-html';
+import resolve from '@rollup/plugin-node-resolve';
+import { terser } from 'rollup-plugin-terser';
+import minifyHTML from 'rollup-plugin-minify-html-literals';
+import { generateSW } from 'rollup-plugin-workbox';
+import summary from 'rollup-plugin-summary';
 
-const config = createDefaultConfig({
-  input: './index.html',
-});
+import workboxConfig from './workbox-config.js';
 
-export default // add plugin to the first config
-{
-  ...config,
-  output: {
-    ...config.output,
-    sourcemap: false,
+export default {
+  onwarn(warning) {
+    if (warning.code !== 'THIS_IS_UNDEFINED') {
+      console.error(`(!) ${warning.message}`);
+    }
   },
   plugins: [
-    ...config.plugins,
-    copy({
-      targets: [
-        { src: 'manifest.json', dest: 'dist' },
-        { src: 'img/*', dest: 'dist/img' },
-      ],
+    // Entry point for application build; can specify a glob to build multiple
+    // HTML files for non-SPA app
+    html({
+      input: 'index.html',
+      serviceWorkerPath: workboxConfig.swDest,
     }),
-    filesize(),
+    // Resolve bare module specifiers to relative paths
+    resolve(),
+    // Minify HTML template literals
+    minifyHTML(),
+    // Minify JS
+    terser({
+      ecma: 2020,
+      module: true,
+      warnings: true,
+    }),
+    generateSW(workboxConfig),
+    // Print bundle summary
+    summary(),
   ],
+  output: {
+    dir: 'dist',
+    entryFileNames: '[name]-[hash].js',
+  },
+  preserveEntrySignatures: 'strict',
 };

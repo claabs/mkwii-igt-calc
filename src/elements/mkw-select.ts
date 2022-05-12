@@ -1,6 +1,7 @@
 import { SelectBase } from '@material/mwc-select/mwc-select-base';
-import { style } from '@material/mwc-select/mwc-select-css';
-import { customElement, css } from 'lit-element';
+import { styles } from '@material/mwc-select/mwc-select.css';
+import { css } from 'lit';
+import { customElement } from 'lit/decorators.js';
 
 const myStyle = css`
   .mdc-select .mdc-floating-label {
@@ -14,7 +15,7 @@ const myStyle = css`
 
 @customElement('mkw-select')
 export class TextField extends SelectBase {
-  static styles = [style, myStyle];
+  static override styles = [styles, myStyle];
 }
 
 declare global {
