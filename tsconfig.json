@@ -25,6 +25,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
     "useUnknownInCatchVariables": false,
+    "skipLibCheck": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",
