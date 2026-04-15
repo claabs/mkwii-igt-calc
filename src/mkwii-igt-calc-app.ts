@@ -11,12 +11,9 @@ import { Workbox, messageSW } from 'workbox-window';
 import { WorkboxLifecycleEvent } from 'workbox-window/utils/WorkboxEvent';
 import './elements/mkw-select';
 import { Snackbar } from '@material/mwc-snackbar';
-import { TextField } from '@material/mwc-textfield';
-import { Dialog } from '@material/mwc-dialog';
 import { SelectedEvent } from '@material/mwc-list/mwc-list-foundation';
 import { Select } from '@material/mwc-select';
 import { tracks32, TrackData, getSubSegments } from './data/tracks32';
-import { SplitsIOService, Split, getRun } from './services/splitsio';
 
 import './time-duration-input';
 import './time-table-output';
@@ -105,14 +102,6 @@ class MkwiiIgtCalcApp extends LitElement {
       margin-bottom: 16px;
     }
 
-    .splitsio-input {
-      margin: 0 8px 8px 0;
-    }
-
-    .splitsio-id {
-      width: calc(76px + 32px);
-    }
-
     .layout {
       display: flex;
     }
@@ -140,11 +129,6 @@ class MkwiiIgtCalcApp extends LitElement {
       <mwc-top-app-bar dense>
         <mwc-icon-button icon="menu" slot="navigationIcon"></mwc-icon-button>
         <div slot="title">Mario Kart Wii IGT Calculator</div>
-        <mwc-icon-button
-          icon="import_export"
-          slot="actionItems"
-          @click=${this.openImportDialog}
-        ></mwc-icon-button>
         <mwc-snackbar
           id="reload-page-snackbar"
           labelText="New version available! OK to reload?"
@@ -154,25 +138,6 @@ class MkwiiIgtCalcApp extends LitElement {
           >
           <mwc-icon-button icon="close" slot="dismiss"></mwc-icon-button>
         </mwc-snackbar>
-        <mwc-dialog heading="Import Run" id="import-dialog">
-          <div>
-            <mwc-textfield
-              id="import-splits-input"
-              label="splits.io URL"
-              dialogInitialFocus
-            ></mwc-textfield>
-          </div>
-          <mwc-button
-            dialogAction="import"
-            slot="primaryAction"
-            @click=${this.importSplits}
-          >
-            import
-          </mwc-button>
-          <mwc-button dialogAction="cancel" slot="secondaryAction">
-            cancel
-          </mwc-button>
-        </mwc-dialog>
         <div class="content">
           <div class="select-boxes">
             <mkw-select
@@ -229,45 +194,6 @@ class MkwiiIgtCalcApp extends LitElement {
             First 4 Tracks: ${this.first4Total}
           </h2>
           <hr />
-          <div ?hidden=${this.calculateDisabled}>
-            <mwc-button
-              class="splitsio-input"
-              outlined
-              @click=${this.uploadSplits}
-              title="Share the course times as splits you can attach to the run on speedrun.com"
-              >Upload to Splits.io</mwc-button
-            >
-            <a
-              href="${this.claimLink}"
-              target="_blank"
-              ?hidden=${this.claimMessageHidden}
-              class="splitsio-input"
-              ><mwc-button
-                outlined
-                title="Give the run ownership to your splits.io account"
-                >Claim Splits.io Run</mwc-button
-              ></a
-            >
-            <div
-              class="layout horizontal center"
-              ?hidden=${this.claimMessageHidden}
-            >
-              <mwc-textfield
-                id="splitsio-id"
-                class="splitsio-id splitsio-input"
-                readOnly
-                label="splits.io ID"
-                value="${this.splitsioId || ''}"
-              >
-              </mwc-textfield>
-              <mwc-icon-button
-                slot="suffix"
-                icon="file_copy"
-                @click="${this.copyClicked}"
-              >
-              </mwc-icon-button>
-            </div>
-          </div>
           <time-table-output
             id="table-output"
             .courses=${this.courses}
@@ -315,26 +241,11 @@ class MkwiiIgtCalcApp extends LitElement {
   @property({ type: Boolean })
   public claimMessageHidden = true;
 
-  @property({ type: String })
-  public splitsioId: string | null = '';
-
-  @query('#trackCountSelect')
-  private trackCountSelectElem!: Select | null;
-
   @query('#category-select')
   private categorySelectElem!: Select | null;
 
-  @query('#splitsio-id')
-  private splitsIOIdElem!: TextField | null;
-
   @query('#table-output')
   private tableOutputElem!: TimeTableOutput | null;
-
-  @query('#import-dialog')
-  private importDialog!: Dialog | null;
-
-  @query('#import-splits-input')
-  private importSplitsInput!: TextField | null;
 
   @query('#reload-page-snackbar')
   private reloadPageSnackbar!: Snackbar | null;
@@ -410,44 +321,6 @@ class MkwiiIgtCalcApp extends LitElement {
       milliInt > 999 ||
       milliInt < 0
     );
-  }
-
-  private async uploadSplits() {
-    this.claimMessageHidden = true;
-    if (!this.calculateTime()) {
-      this.splitsioId = null;
-    } else {
-      // Get category name
-      let categoryNameLong = '';
-      if (this.selectedTrackCount === 0) {
-        categoryNameLong = '32 Tracks';
-      } else {
-        categoryNameLong = this.categoryListProp[this.selectedCategory];
-      }
-
-      // Get split list
-      const segments: Split[] = [];
-      this.courses.forEach((course) => {
-        let duration = parseInt(course.minutes as string, 10) * 60000;
-        duration += parseInt(course.seconds as string, 10) * 1000;
-        duration += parseInt(course.milliseconds as string, 10);
-        segments.push({
-          name: course.label,
-          duration,
-        });
-      });
-
-      const SplitsIO = new SplitsIOService(segments);
-      const exchange = SplitsIO.generateExchangeJSON(categoryNameLong);
-      try {
-        const uploadResp = await SplitsIO.uploadSplits(exchange);
-        this.claimLink = uploadResp.claimUri;
-        this.splitsioId = uploadResp.id;
-        this.claimMessageHidden = false;
-      } catch (e) {
-        console.error(e);
-      }
-    }
   }
 
   private categoryList(trackCount: number): string[] {
@@ -526,7 +399,6 @@ class MkwiiIgtCalcApp extends LitElement {
     this.total = '';
     this.first4Total = '';
     this.first16Total = '';
-    this.splitsioId = null;
   }
 
   private timeDurationInputChange(evt: TimeDurationInputEvent) {
@@ -548,77 +420,6 @@ class MkwiiIgtCalcApp extends LitElement {
         plcMinutes: elem.avgMinutes.toString(),
         plcSeconds: elem.avgSeconds.toString(),
         plcMilliseconds: elem.avgMilliseconds.toString(),
-      };
-    });
-  }
-
-  private copyClicked(): void {
-    if (!this.splitsIOIdElem) throw new Error('Missing splitsElem');
-
-    this.splitsIOIdElem.select();
-    document.execCommand('copy');
-    // splitsElem.selectionEnd = splitsElem.selectionStart;
-    this.splitsIOIdElem.blur();
-  }
-
-  private openImportDialog(): void {
-    if (!this.importDialog) throw new Error('Missing importDialog');
-    this.importDialog.show();
-  }
-
-  private async importSplits(): Promise<void> {
-    if (!this.importSplitsInput) throw new Error('Missing importSplitsInput');
-    const inputValue = this.importSplitsInput.value;
-    let rawSplitId;
-    try {
-      const { pathname } = new URL(inputValue);
-      rawSplitId = pathname.replace('/', '');
-    } catch (err) {
-      rawSplitId = inputValue;
-    }
-    const splitId = rawSplitId.toLowerCase().replace(/[^a-z\d]/g, ''); // Filter out all non-base36 characters
-    const run = await getRun(splitId);
-
-    if (run.default_timing !== 'game')
-      throw new Error('Cannot parse splits without game time');
-
-    if (run.game?.name !== 'Mario Kart Wii')
-      throw new Error('Splits must be from MKW');
-    const segmentCount = run.segments.length;
-
-    const firstTrack = run.segments[0].name;
-    if (!firstTrack) throw new Error('Could not get first track from splits');
-    const startTrackIndex = tracks32.findIndex(
-      (track) => track.name === firstTrack
-    );
-    if (startTrackIndex === -1) throw new Error('Could not match start track');
-
-    if (!this.trackCountSelectElem)
-      throw new Error('Could not find track count select element');
-
-    if (!this.categorySelectElem)
-      throw new Error('Could not find category select element');
-
-    if (segmentCount === 32) {
-      this.trackCountSelectElem.select(0);
-      await this.trackCountSelectElem.layout(true);
-      this.categorySelectElem.select(startTrackIndex);
-    } else if (segmentCount === 16) {
-      this.trackCountSelectElem.select(1);
-      await this.trackCountSelectElem.layout(true);
-      this.categorySelectElem.select(tracks32[startTrackIndex].class);
-    } else if (segmentCount === 4) {
-      this.trackCountSelectElem.select(2);
-      await this.trackCountSelectElem.layout(true);
-      this.categorySelectElem.select(tracks32[startTrackIndex].cup);
-    } else {
-      throw new Error('Invalid segment count');
-    }
-
-    this.courses = run.segments.map((segment, index): TimeDurationInputAttr => {
-      return {
-        ...this.courses[index],
-        ...millisToClockValues(segment.gametime_duration_ms),
       };
     });
   }
