@@ -1,8 +1,8 @@
 import path from 'path';
 
 export default {
-  swDest: path.join(__dirname, 'dist', 'sw.js'),
-  globDirectory: path.join(__dirname, 'dist'),
+  swDest: path.join('dist', 'sw.js'),
+  globDirectory: path.join('dist'),
   globPatterns: ['**/*.{js,png,ico,svg,html,json,css}'],
   sourcemap: false,
   modifyURLPrefix: {

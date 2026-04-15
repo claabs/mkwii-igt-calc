@@ -1,8 +1,8 @@
-import html from '@web/rollup-plugin-html';
+import { rollupPluginHTML as html } from '@web/rollup-plugin-html';
 import resolve from '@rollup/plugin-node-resolve';
 import { copy } from '@web/rollup-plugin-copy';
-import { terser } from 'rollup-plugin-terser';
-import minifyHTML from 'rollup-plugin-minify-html-literals';
+import terser from '@rollup/plugin-terser';
+import minifyHTML from '@lit-labs/rollup-plugin-minify-html-literals';
 import { generateSW } from 'rollup-plugin-workbox';
 import summary from 'rollup-plugin-summary';
 
